@@ -111,7 +111,7 @@ if start_menu():
         clock.tick(FPS)
 
 #háttér megrajzolása
-    draw_bg()
+        draw_bg()
 # játékosnak mutassa a hp
     draw_health_bar(fighter_1.health, 20, 20)
     draw_health_bar(fighter_2.health, 580, 20)
