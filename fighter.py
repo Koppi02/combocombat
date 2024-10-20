@@ -52,14 +52,14 @@ class Fighter():
             # 1 játékos
             if self.player == 1:
                 #mozgás
-                if key[pygame.K_a]:
+                if key[pygame.K_a] and self.hit == False and self.blocking == False:
                     dx = -SPEED
                     self.running = True
-                if key[pygame.K_d]:
+                if key[pygame.K_d] and self.hit == False and self.blocking == False:
                     dx = SPEED
                     self.running = True
                 #jump
-                if key[pygame.K_w] and self.jump == False:
+                if key[pygame.K_w] and self.jump == False and self.blocking == False:
                     self.vel_y = - 30
                     self.jump = True
 
@@ -82,14 +82,14 @@ class Fighter():
              # 2 játékos
             if self.player == 2:
                         # mozgás
-                        if key[pygame.K_LEFT]:
+                        if key[pygame.K_LEFT] and self.hit == False and self.blocking == False:
                             dx = -SPEED
                             self.running = True
-                        if key[pygame.K_RIGHT]:
+                        if key[pygame.K_RIGHT] and self.hit == False and self.blocking == False:
                             dx = SPEED
                             self.running = True
                         # jump
-                        if key[pygame.K_UP] and self.jump == False:
+                        if key[pygame.K_UP] and self.jump == False and self.blocking == False:
                             self.vel_y = - 30
                             self.jump = True
 
@@ -141,11 +141,12 @@ class Fighter():
 
     #animáció kezelése
     def update(self):
-        if self.health <= 0:
+        if self.alive == False:
+            self.update_action(6)#6: rip
+        elif self.health <= 0:
             self.health = 0
             self.alive = False
-            self.update_action(6)#6: rip
-        if self.hit == True:
+        elif self.hit == True and self.alive == True:
             self.update_action(5) #5: eltaláltak
         elif self.attacking == True:
             if self.attack_type == 1:
@@ -156,10 +157,14 @@ class Fighter():
             self.update_action(2) #2:ugrik
         elif self.running == True:
             self.update_action(1) #1:fut
+        elif self.blocking == True:
+            self.update_action(7) #:védekezik
         else:
             self.update_action(0) #0:áll
 
-        animation_cooldown = 60
+        # két frame közötti várakozás
+        animation_cooldown = 41 # millisec
+
         self.image = self.animation_list[self.action][self.frame_index]
         if pygame.time.get_ticks() - self.update_time > animation_cooldown:
             self.frame_index += 1
@@ -174,7 +179,7 @@ class Fighter():
                 #nézze meg, hogy attacknak vége van e
                 if self.action == 3 or self.action == 4:
                     self.attacking = False
-                    self.attack_cooldown = 50
+                    self.attack_cooldown = 0
                 #nézze meg, hogy a hitnek vége van e
                 if self.action == 5:
                     self.hit = False
