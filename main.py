@@ -18,7 +18,7 @@ YELLOW = (255,255,0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 
-#menü
+# menü
 def start_menu():
     menu_running = True
     while menu_running:
@@ -40,10 +40,8 @@ def start_menu():
                     pygame.quit()
                     return False
         pygame.display.update()
-
-    screen.fill(WHITE)
-    pygame.display.update()
     return True
+
 
 
 #intro
@@ -113,21 +111,17 @@ fighter_2 = Fighter(2,700, 310, True, WIZARD_DATA, wizard_sheet, WIZARD_ANIMATIO
 if start_menu():
     run = True
     while run:
-
         clock.tick(FPS)
+        draw_bg()  # Háttér kirajzolása minden ciklus elején
 
-    #háttér megrajzolása
-        draw_bg()
-    # játékosnak mutassa a hp
+        # HP bar, játékosok, stb. kirajzolása
         draw_health_bar(fighter_1.health, 20, 20)
         draw_health_bar(fighter_2.health, 580, 20)
         draw_text("P1: " + str(score[0]), score_font, RED, 20, 60)
         draw_text("P2: " + str(score[1]), score_font, RED, 580, 60)
 
-
-        #update visszaszámláló
+        # Visszaszámláló logika
         if intro_count <= 0:
-            # fighter mozgatása
             fighter_1.move(SCREEN_WIDTH, SCREEN_HEIGHT, screen, fighter_2, round_over)
             fighter_2.move(SCREEN_WIDTH, SCREEN_HEIGHT, screen, fighter_1, round_over)
         else:
@@ -135,19 +129,19 @@ if start_menu():
             if (pygame.time.get_ticks() - last_count_update) >= 1000:
                 intro_count -= 1
                 last_count_update = pygame.time.get_ticks()
-                print(intro_count)
 
-
-
-    #update fighter
+        # Fighter frissítés és kirajzolás
         fighter_1.update()
         fighter_2.update()
-
-    #fighter rajzolása
         fighter_1.draw(screen)
         fighter_2.draw(screen)
 
-    #néze meg ha valaki vesztett
+        # Eseménykezelés
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+        # Nézze meg ha valaki vesztett
         if round_over == False:
             if fighter_1.alive == False:
                 score[1] += 1
@@ -164,12 +158,8 @@ if start_menu():
                 intro_count = 3
                 fighter_1 = Fighter(1, 200, 310, False, WARRIOR_DATA, warrior_sheet, WARRIOR_ANIMATION_STEPS)
                 fighter_2 = Fighter(2, 700, 310, True, WIZARD_DATA, wizard_sheet, WIZARD_ANIMATION_STEPS)
-        #event használó
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
 
-    #frissíti a képet
-    pygame.display.update()
+        # Frissíti a képet
+        pygame.display.update()
 
 pygame.quit()
