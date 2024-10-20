@@ -23,7 +23,7 @@ class Fighter():
         self.hit = False
         self.health = 100
         self.alive = True
-
+#asd
     def load_images(self, sprite_sheet, animation_steps):
         #extract képeket a sprite sheetből
         animation_list = []
