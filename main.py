@@ -26,32 +26,32 @@ round_over = False
 ROUND_OVER_COOLDOWN = 2000
 
 #a harcosok változója
-WARRIOR_SIZE = 130
+WARRIOR_SIZE = 128
 WARRIOR_SCALE = 1.5
 WARRIOR_OFFSET = [40, 20]
 WARRIOR_DATA = [WARRIOR_SIZE, WARRIOR_SCALE, WARRIOR_OFFSET]
-WIZARD_SIZE = 130
+WIZARD_SIZE = 128
 WIZARD_SCALE = 1.5
 WIZARD_OFFSET = [40, 20]
 WIZARD_DATA = [WIZARD_SIZE, WIZARD_SCALE, WIZARD_OFFSET]
 
 #háttér beállítás
-bg_image = pygame.image.load('D:/combocombat/combocombat/japan.png').convert_alpha()
+bg_image = pygame.image.load('./Sprites/japan.png').convert_alpha()
 
 #spritesheets
-warrior_sheet = pygame.image.load('D:/combocombat/combocombat/BennySpriteSheet.png').convert_alpha()
-wizard_sheet = pygame.image.load('D:/combocombat/combocombat/BennySpriteSheet.png').convert_alpha()
+warrior_sheet = pygame.image.load('./Sprites/BSS.png').convert_alpha()
+wizard_sheet = pygame.image.load('./Sprites/BSS.png').convert_alpha()
 
 #victory
-victory_img = pygame.image.load('D:/combocombat/combocombat/victory.png').convert_alpha()
+victory_img = pygame.image.load('./Sprites/victory.png').convert_alpha()
 
 #megszámolni a lépéseket minden egyes animációban
-WARRIOR_ANIMATION_STEPS = [53, 24, 16 , 46 , 0 , 0, 0, 0]
-WIZARD_ANIMATION_STEPS = [53, 24, 16, 46 , 0 ,0, 0, 0]
+WARRIOR_ANIMATION_STEPS = [53, 12, 16 , 15 , 15 , 12, 54, 0]
+WIZARD_ANIMATION_STEPS = [53, 12, 16 , 15 , 15 , 12, 54, 0]
 
 #font
-count_font = pygame.font.Font('D:/combocombat/combocombat/turok.ttf', 80)
-score_font = pygame.font.Font('D:/combocombat/combocombat/turok.ttf', 30)
+count_font = pygame.font.Font('./turok.ttf', 80)
+score_font = pygame.font.Font('./turok.ttf', 30)
 
 #kiírja amit kell
 def draw_text(text, font,text_col, x, y):
