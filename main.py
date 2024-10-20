@@ -30,12 +30,12 @@ def start_menu():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                menu_running = False
-            if event.key == pygame.K_ESCAPE:
-                pygame.quit()
-                return False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    menu_running = False
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    return False
         pygame.display.update()
     return True
 
