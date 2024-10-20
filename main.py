@@ -18,6 +18,28 @@ YELLOW = (255,255,0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 
+#menü
+def start_menu():
+    menu_running = True
+    while menu_running:
+        screen.fill(WHITE)
+        draw_text('Combocombat', count_font, RED, SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 3)
+        draw_text('Press ENTER to Start', score_font, RED, SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2)
+        draw_text('Press ESC to Quit', score_font, RED, SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 + 40)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                menu_running = False
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                return False
+        pygame.display.update()
+    return True
+
+
 #intro
 intro_count = 3
 last_count_update = pygame.time.get_ticks()
@@ -82,10 +104,11 @@ fighter_2 = Fighter(2,700, 310, True, WIZARD_DATA, wizard_sheet, WIZARD_ANIMATIO
 
 
 # játék loop
-run = True
-while run:
+if start_menu():
+    run = True
+    while run:
 
-    clock.tick(FPS)
+        clock.tick(FPS)
 
 #háttér megrajzolása
     draw_bg()
