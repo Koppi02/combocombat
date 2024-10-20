@@ -1,5 +1,6 @@
 import pygame
 from fighter import Fighter
+from importCharacters import *
 
 pygame.init()
 #ablak kreálás
@@ -17,6 +18,18 @@ FPS = 60
 YELLOW = (255,255,0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
+
+# Karakterek betöltése
+character_directory = './characters'
+character_data_list = load_character_data(character_directory)
+
+fighters = []
+for character_data in character_data_list:
+    sprite_sheet = pygame.image.load(f'./Sprites/{character_data["sprite_sheet"]}').convert_alpha()
+    data = [character_data["size"], character_data["scale"], character_data["offset"]]
+    fighter = Fighter(1, 200, 310, False, data, sprite_sheet, character_data["animation_steps"])
+    fighters.append(fighter)
+
 
 # menü
 def start_menu():
@@ -52,16 +65,14 @@ round_over = False
 ROUND_OVER_COOLDOWN = 5000
 
 #a harcosok változója
-WARRIOR_SIZE = 128
-WARRIOR_SCALE = 1.5
-WARRIOR_OFFSET = [40, 20]
-WARRIOR_DATA = [WARRIOR_SIZE, WARRIOR_SCALE, WARRIOR_OFFSET]
-WIZARD_SIZE = 128
-WIZARD_SCALE = 1.5
-WIZARD_OFFSET = [40, 20]
-WIZARD_DATA = [WIZARD_SIZE, WIZARD_SCALE, WIZARD_OFFSET]
-
-# importCharacters.import()
+# WARRIOR_SIZE = 128
+# WARRIOR_SCALE = 1.5
+# WARRIOR_OFFSET = [40, 20]
+# WARRIOR_DATA = [WARRIOR_SIZE, WARRIOR_SCALE, WARRIOR_OFFSET]
+# WIZARD_SIZE = 128
+# WIZARD_SCALE = 1.5
+# WIZARD_OFFSET = [40, 20]
+# WIZARD_DATA = [WIZARD_SIZE, WIZARD_SCALE, WIZARD_OFFSET]
 
 #háttér beállítás
 bg_image = pygame.image.load('./Sprites/japan.png').convert_alpha()
@@ -102,17 +113,15 @@ def draw_health_bar(health, x, y):
 # TODO: karakter választó
 
 # 2 db fighter
-fighter_1 = Fighter(1,200, 310, False, WARRIOR_DATA, warrior_sheet, WARRIOR_ANIMATION_STEPS)
-fighter_2 = Fighter(2,700, 310, True, WIZARD_DATA, wizard_sheet, WIZARD_ANIMATION_STEPS)
-
-
+fighter_1 = Fighter(1, 200, 310, False, [fighters[0].size, fighters[0].image_scale, fighters[0].offset], fighters[0].sprite_sheet, fighters[0].animation_steps)
+fighter_2 = Fighter(2, 700, 310, True, [fighters[0].size, fighters[0].image_scale, fighters[0].offset], fighters[0].sprite_sheet, fighters[0].animation_steps)
 
 # játék loop
 if start_menu():
     run = True
     while run:
         clock.tick(FPS)
-        draw_bg()  # Háttér kirajzolása minden ciklus elején
+        draw_bg()  # Háttér kirajzolása
 
         # HP bar, játékosok, stb. kirajzolása
         draw_health_bar(fighter_1.health, 20, 20)
@@ -156,10 +165,12 @@ if start_menu():
             if pygame.time.get_ticks() - round_over_time > ROUND_OVER_COOLDOWN:
                 round_over = False
                 intro_count = 3
-                fighter_1 = Fighter(1, 200, 310, False, WARRIOR_DATA, warrior_sheet, WARRIOR_ANIMATION_STEPS)
-                fighter_2 = Fighter(2, 700, 310, True, WIZARD_DATA, wizard_sheet, WIZARD_ANIMATION_STEPS)
+                # Új harcosok inicializálása
+                fighter_1 = Fighter(1, 200, 310, False, [fighters[0].size, fighters[0].image_scale, fighters[0].offset], fighters[0].sprite_sheet, fighters[0].animation_steps)
+                fighter_2 = Fighter(2, 700, 310, True, [fighters[0].size, fighters[0].image_scale, fighters[0].offset], fighters[0].sprite_sheet, fighters[0].animation_steps)
 
         # Frissíti a képet
         pygame.display.update()
+
 
 pygame.quit()

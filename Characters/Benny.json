@@ -1,0 +1,7 @@
+{
+    "size": 128,
+    "scale": 1.5,
+    "offset": [40, 20],
+    "sprite_sheet": "BSS.png",
+    "animation_steps": [53, 12, 16, 15, 15, 12, 54, 1]
+}
