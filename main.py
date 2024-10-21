@@ -1,6 +1,6 @@
 import pygame
 from fighter import Fighter
-from importCharacters import *
+from import_characters import *
 
 pygame.init()
 #ablak kreálás
@@ -19,17 +19,7 @@ YELLOW = (255,255,0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 
-# Karakterek betöltése
-character_directory = './characters'
-character_data_list = load_character_data(character_directory)
-
-fighters = []
-for character_data in character_data_list:
-    sprite_sheet = pygame.image.load(f'./Sprites/{character_data["sprite_sheet"]}').convert_alpha()
-    data = [character_data["size"], character_data["scale"], character_data["offset"]]
-    fighter = Fighter(1, 200, 310, False, data, sprite_sheet, character_data["animation_steps"])
-    fighters.append(fighter)
-
+fighters = import_characters()
 
 # menü
 def start_menu():
@@ -55,8 +45,6 @@ def start_menu():
         pygame.display.update()
     return True
 
-
-
 #intro
 intro_count = 3
 last_count_update = pygame.time.get_ticks()
@@ -64,29 +52,11 @@ score = [0, 0]#score [P1,P2]
 round_over = False
 ROUND_OVER_COOLDOWN = 5000
 
-#a harcosok változója
-# WARRIOR_SIZE = 128
-# WARRIOR_SCALE = 1.5
-# WARRIOR_OFFSET = [40, 20]
-# WARRIOR_DATA = [WARRIOR_SIZE, WARRIOR_SCALE, WARRIOR_OFFSET]
-# WIZARD_SIZE = 128
-# WIZARD_SCALE = 1.5
-# WIZARD_OFFSET = [40, 20]
-# WIZARD_DATA = [WIZARD_SIZE, WIZARD_SCALE, WIZARD_OFFSET]
-
 #háttér beállítás
-bg_image = pygame.image.load('./Sprites/japan.png').convert_alpha()
-
-#spritesheets
-warrior_sheet = pygame.image.load('./Sprites/BSS.png').convert_alpha()
-wizard_sheet = pygame.image.load('./Sprites/BSS.png').convert_alpha()
+bg_image = pygame.image.load('./japan.png').convert_alpha()
 
 #victory
-victory_img = pygame.image.load('./Sprites/victory.png').convert_alpha()
-
-#megszámolni a lépéseket minden egyes animációban
-WARRIOR_ANIMATION_STEPS = [53, 12, 16 , 15 , 15 , 12, 54, 1]
-WIZARD_ANIMATION_STEPS = [53, 12, 16 , 15 , 15 , 12, 54, 1]
+victory_img = pygame.image.load('./victory.png').convert_alpha()
 
 #font
 count_font = pygame.font.Font('./turok.ttf', 80)
@@ -98,8 +68,8 @@ def draw_text(text, font,text_col, x, y):
     screen.blit(img, (x, y))
 
 #háttér kirajzolása
-def draw_bg():
-    scaled_bg =  pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+def draw_bg(image):
+    scaled_bg = pygame.transform.scale(image, (SCREEN_WIDTH, SCREEN_HEIGHT))
     screen.blit(scaled_bg, (0, 0))
 
 #hp bar
@@ -121,7 +91,7 @@ if start_menu():
     run = True
     while run:
         clock.tick(FPS)
-        draw_bg()  # Háttér kirajzolása
+        draw_bg(bg_image)  # Háttér kirajzolása
 
         # HP bar, játékosok, stb. kirajzolása
         draw_health_bar(fighter_1.health, 20, 20)
