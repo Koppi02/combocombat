@@ -9,6 +9,7 @@ FPS = 60
 YELLOW = (255,255,0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
+BLUE = (0, 40, 190)
     # Játék Beállítások
 intro_count = 3
 ROUND_OVER_COOLDOWN = 5000

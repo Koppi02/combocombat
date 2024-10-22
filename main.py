@@ -66,13 +66,18 @@ def draw_bg(image):
     scaled_bg = pygame.transform.scale(image, (SCREEN_WIDTH, SCREEN_HEIGHT))
     screen.blit(scaled_bg, (0, 0))
 
-#hp bar
-def draw_health_bar(health, x, y):
-    ratio = health / 100
+#hp bar és stamina bar kirajzolása
+def draw_health_and_stamina_bar(health,stamina, x, y):
+    # hp bar
+    health_ratio = health / 100
     pygame.draw.rect(screen, WHITE, (x-2, y - 2, 404, 34))
     pygame.draw.rect(screen, RED, (x, y , 400, 30))
-    pygame.draw.rect(screen, YELLOW, (x, y, 400*ratio, 30))
+    pygame.draw.rect(screen, YELLOW, (x, y, 400*health_ratio, 30))
 
+    #stamina bar
+    stamina_ratio = stamina / 100
+    pygame.draw.rect(screen, WHITE, (x-2, y + 40, 404, 20))
+    pygame.draw.rect(screen, BLUE, (x, y + 40, 400*stamina_ratio, 20))
 
 # Karakterek Kiválasztása
 fighter_1 = Fighter(1, 200, 310, False, [fighters[0].size, fighters[0].image_scale, fighters[0].offset], fighters[0].sprite_sheet, fighters[0].animation_steps)
@@ -86,10 +91,10 @@ if start_menu():
         draw_bg(bg_image)  # Háttér kirajzolása
 
         # HP bar, játékosok, stb. kirajzolása
-        draw_health_bar(fighter_1.health, 20, 20)
-        draw_health_bar(fighter_2.health, 580, 20)
-        draw_text("P1: " + str(score[0]), score_font, RED, 20, 60)
-        draw_text("P2: " + str(score[1]), score_font, RED, 580, 60)
+        draw_health_and_stamina_bar(fighter_1.health,fighter_1.stamina, 20, 20)
+        draw_health_and_stamina_bar(fighter_2.health,fighter_2.stamina, 580, 20)
+        draw_text("P1: " + str(score[0]), score_font, RED, 20, 80)
+        draw_text("P2: " + str(score[1]), score_font, RED, 580, 80)
 
         # Visszaszámláló logika
         if intro_count <= 0:
@@ -106,6 +111,8 @@ if start_menu():
         fighter_2.update()
         fighter_1.draw(screen)
         fighter_2.draw(screen)
+        fighter_1.regen()
+        fighter_2.regen()
 
         # Eseménykezelés
         for event in pygame.event.get():
