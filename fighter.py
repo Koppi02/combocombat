@@ -17,6 +17,7 @@ class Fighter():
         self.running = False
         self.jump = False
         self.attacking = False
+        self.attacking_completed = False
         self.blocking = False
         self.attack_type = 0
         self.attack_cooldown = 0
