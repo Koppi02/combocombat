@@ -24,11 +24,12 @@ class Fighter():
         self.health = 100
         self.stamina = 100
         self.max_stamina = 100
-        self.stamina_regen_rate = 10
+        self.stamina_regen_rate = 0.2
         self.block_uses = 3
         self.max_block_uses = 3
         self.block_regen_time = 1000
         self.last_block_time = 0
+        self.block_stamina_cost = 10
         self.alive = True
         self.sprite_sheet = sprite_sheet
         self.animation_steps = animation_steps
@@ -208,19 +209,40 @@ class Fighter():
             elif attacking_rect.colliderect(target.rect) and target.blocking == True:
                 print("Blocked")
        # pygame.draw.rect(surface, (0,255,0), attacking_rect)
+    #def attack_anim_end(self):
+     #   self.attacking = False
+
 
     def block(self, target):
         current_time = pygame.time.get_ticks()
         if self.block_uses > 0:
-            self.block_uses -= 1
+            self.block_uses -= self.block_stamina_cost
             self.last_block_time = current_time
 
     def regen(self):
-        if self.stamina < self.max_stamina:
+        if self.stamina < self.max_stamina and not self.attacking and not self.blocking:
             self.stamina += self.stamina_regen_rate
 
         if pygame.time.get_ticks() - self.last_block_time > self.block_regen_time and self.block_uses < self.max_block_uses:
             self.block_uses = self.max_block_uses
+
+
+    def stop_block(self):
+        self.blocking = False
+
+
+    def take_hit(self):
+        if self.blocking:
+            self.stamina -= self.block_stamina_cost
+            if self.stamina <= 0:
+                self.stop_block()
+
+        else:
+            self.health -= 10
+            if self.health < 0:
+                self.health = 0
+
+
 
 
     def update_action(self, new_action):
