@@ -2,6 +2,7 @@ import json
 import os
 from fighter import Fighter
 import pygame
+from settings import *
 
 def load_character_data(directory):
     characters = []
@@ -17,10 +18,10 @@ def import_characters():
     character_data_list = load_character_data(character_directory)
 
     fighters = []
-    
+
     for character_data in character_data_list:
        sprite_sheet = pygame.image.load(f'{character_directory}/Sprites/{character_data["sprite_sheet"]}').convert_alpha()
-       data = [character_data["size"], character_data["scale"], character_data["offset"]]
+       data = [SPRITE_SIZE, SPRITE_SCALE, SPRITE_OFFSET]
        fighter = Fighter(1, 200, 310, False, data, sprite_sheet, character_data["animation_steps"])
        fighters.append(fighter)
 

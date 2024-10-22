@@ -1,35 +1,26 @@
 import pygame
 from fighter import Fighter
 from import_characters import *
+from settings import *
 
 pygame.init()
-#ablak kreálás
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 600
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Combocombat')
 
-#fps
 clock = pygame.time.Clock()
-FPS = 60
-
-#színek megadása
-YELLOW = (255,255,0)
-RED = (255, 0, 0)
-WHITE = (255, 255, 255)
 
 fighters = import_characters()
 
-# menü
+# Főmenü
 def start_menu():
     menu_running = True
     while menu_running:
         screen.fill(WHITE)
 
-        draw_text('Combocombat', count_font, RED, SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 3)
-        draw_text('Press ENTER to Start', score_font, RED, SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2)
-        draw_text('Press ESC to Quit', score_font, RED, SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 + 40)
+        draw_centered_text('Combocombat', count_font, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
+        draw_centered_text('Press ENTER to Start', score_font, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        draw_centered_text('Press ESC to Quit', score_font, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.5)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -45,15 +36,13 @@ def start_menu():
         pygame.display.update()
     return True
 
-#intro
-intro_count = 3
+# Intró
 last_count_update = pygame.time.get_ticks()
 score = [0, 0]#score [P1,P2]
 round_over = False
-ROUND_OVER_COOLDOWN = 5000
 
 #háttér beállítás
-bg_image = pygame.image.load('./japan.png').convert_alpha()
+bg_image = pygame.image.load('./Maps/japan.png').convert_alpha()
 
 #victory
 victory_img = pygame.image.load('./victory.png').convert_alpha()
@@ -63,9 +52,14 @@ count_font = pygame.font.Font('./turok.ttf', 80)
 score_font = pygame.font.Font('./turok.ttf', 30)
 
 #kiírja amit kell
-def draw_text(text, font,text_col, x, y):
+def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
     screen.blit(img, (x, y))
+
+def draw_centered_text(text, font, text_col, x, y):
+    img = font.render(text, True, text_col)
+    text_rect = img.get_rect(center=(x, y))
+    screen.blit(img, text_rect)
 
 #háttér kirajzolása
 def draw_bg(image):
@@ -80,13 +74,11 @@ def draw_health_bar(health, x, y):
     pygame.draw.rect(screen, YELLOW, (x, y, 400*ratio, 30))
 
 
-# TODO: karakter választó
-
-# 2 db fighter
+# Karakterek Kiválasztása
 fighter_1 = Fighter(1, 200, 310, False, [fighters[0].size, fighters[0].image_scale, fighters[0].offset], fighters[0].sprite_sheet, fighters[0].animation_steps)
 fighter_2 = Fighter(2, 700, 310, True, [fighters[0].size, fighters[0].image_scale, fighters[0].offset], fighters[0].sprite_sheet, fighters[0].animation_steps)
 
-# játék loop
+# Játék Loop
 if start_menu():
     run = True
     while run:
@@ -104,7 +96,7 @@ if start_menu():
             fighter_1.move(SCREEN_WIDTH, SCREEN_HEIGHT, screen, fighter_2, round_over)
             fighter_2.move(SCREEN_WIDTH, SCREEN_HEIGHT, screen, fighter_1, round_over)
         else:
-            draw_text(str(intro_count), count_font, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
+            draw_centered_text(str(intro_count), count_font, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
             if (pygame.time.get_ticks() - last_count_update) >= 1000:
                 intro_count -= 1
                 last_count_update = pygame.time.get_ticks()
@@ -122,16 +114,20 @@ if start_menu():
 
         # Nézze meg ha valaki vesztett
         if round_over == False:
+            winner = ''
             if fighter_1.alive == False:
+                winner = 'Player 2'
                 score[1] += 1
                 round_over = True
                 round_over_time = pygame.time.get_ticks()
             elif fighter_2.alive == False:
+                winner = 'Player 1'
                 score[0] += 1
                 round_over = True
                 round_over_time = pygame.time.get_ticks()
         else:
-            screen.blit(victory_img, (360, 150))
+            # screen.blit(victory_img, (360, 150))
+            draw_centered_text(f'{winner} wins!', count_font, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
             if pygame.time.get_ticks() - round_over_time > ROUND_OVER_COOLDOWN:
                 round_over = False
                 intro_count = 3
