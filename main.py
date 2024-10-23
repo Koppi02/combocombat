@@ -81,7 +81,7 @@ def draw_health_and_stamina_bar(health,stamina, x, y):
 
 # Karakterek Kiválasztása
 fighter_1 = Fighter(1, 200, 310, False, [fighters[1].size, fighters[1].image_scale, fighters[1].offset], fighters[1].sprite_sheet, fighters[1].animation_steps)
-fighter_2 = Fighter(2, 700, 310, True, [fighters[0].size, fighters[0].image_scale, fighters[0].offset], fighters[0].sprite_sheet, fighters[0].animation_steps)
+fighter_2 = Fighter(2, 700, 310, True, [fighters[1].size, fighters[1].image_scale, fighters[1].offset], fighters[1].sprite_sheet, fighters[1].animation_steps)
 
 # Játék Loop
 if start_menu():
@@ -107,8 +107,8 @@ if start_menu():
                 last_count_update = pygame.time.get_ticks()
 
         # Fighter frissítés és kirajzolás
-        fighter_1.update()
-        fighter_2.update()
+        fighter_1.update(fighter_2)
+        fighter_2.update(fighter_1)
         fighter_1.draw(screen)
         fighter_2.draw(screen)
         fighter_1.regen()
@@ -140,7 +140,7 @@ if start_menu():
                 intro_count = 3
                 # Új harcosok inicializálása
                 fighter_1 = Fighter(1, 200, 310, False, [fighters[1].size, fighters[1].image_scale, fighters[1].offset], fighters[1].sprite_sheet, fighters[1].animation_steps)
-                fighter_2 = Fighter(2, 700, 310, True, [fighters[0].size, fighters[0].image_scale, fighters[0].offset], fighters[0].sprite_sheet, fighters[0].animation_steps)
+                fighter_2 = Fighter(2, 700, 310, True, [fighters[1].size, fighters[1].image_scale, fighters[1].offset], fighters[1].sprite_sheet, fighters[1].animation_steps)
 
         # Frissíti a képet
         pygame.display.update()

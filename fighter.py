@@ -153,61 +153,77 @@ class Fighter():
         self.rect.y += dy
 
     #animáció kezelése
-    def update(self):
-        if self.alive == False:
-            self.update_action(6)#6: rip
+    def update(self, target):
+        # Ellenőrizd, hogy a játékos halott-e
+        if not self.alive:
+            self.update_action(6)  # Halott állapot
         elif self.health <= 0:
             self.health = 0
             self.alive = False
-        elif self.hit == True and self.alive == True:
-            self.update_action(5) #5: eltaláltak
-        elif self.attacking == True:
+        elif self.hit and self.alive:  # Csak ha él, és eltalálták
+            self.update_action(5)  # Találat animáció
+            self.attacking = False  # Ha eltalálták, állítsd le a támadást
+        elif self.attacking:
             if self.attack_type == 1:
-                self.update_action(3)#3: attack típus 1
+                self.update_action(3)  # Támadás 1
             elif self.attack_type == 2:
-                self.update_action(4)#4: attack típus 2
-        elif self.jump == True:
-            self.update_action(2) #2:ugrik
-        elif self.running == True:
-            self.update_action(1) #1:fut
-        elif self.blocking == True:
-            self.update_action(7) #:védekezik
+                self.update_action(4)  # Támadás 2
+        elif self.jump:
+            self.update_action(2)  # Ugrás
+        elif self.running:
+            self.update_action(1)  # Futás
+        elif self.blocking:
+            self.update_action(7)  # Blokkolás
         else:
-            self.update_action(0) #0:áll
+            self.update_action(0)  # Állás
 
+        # Frissítjük a jelenlegi képet az animációs listából
         self.image = self.animation_list[self.action][self.frame_index]
+        
+        # Animációs időzítés
         if pygame.time.get_ticks() - self.update_time > ANIMATION_SPEED:
             self.frame_index += 1
             self.update_time = pygame.time.get_ticks()
-        # check ha az animáció végzet
+
+        # Ellenőrizzük, hogy az animáció végére értünk-e
         if self.frame_index >= len(self.animation_list[self.action]):
-            # nézze meg ha a játékos halott és akkor fejzze be az animációt
-            if self.alive == False:
-                self.frame_index = len(self.animation_list[self.action])-1
+            if self.action == 5:  # Találat animáció
+                self.hit = False  # Reseteljük a hit állapotot
+            elif self.action in [3, 4]:  # Támadás animáció
+                self.attacking = False  # Támadás befejezése
+                self.attack_cooldown = 20  # Támadási időzítő
+            elif self.action == 6:  # Halál animáció
+                self.frame_index = len(self.animation_list[self.action]) - 1  # Maradjunk az utolsó frame-nél
             else:
-                self.frame_index = 0
-                #nézze meg, hogy attacknak vége van e
-                if self.action == 3 or self.action == 4:
-                    self.attacking = False
-                    self.attack_cooldown = 0
-                #nézze meg, hogy a hitnek vége van e
-                if self.action == 5:
-                    self.hit = False
-                #miközben a játékos üt aközben megütnek, akkor megáll az ütés
-                    self.attacking == False
-                    self.attack_cooldown = 20
+                self.frame_index = 0  # Visszaállítjuk az indexet
 
 
-    def attack(self,  target):
+
+
+
+    def attack(self, target):
         if self.attack_cooldown == 0 and self.stamina > 20:
             self.attacking = True
             self.stamina -= 20
-            attacking_rect = pygame.Rect(self.rect.centerx - (1.2*self.rect.width * self.flip), self.rect.y, 1.2 * self.rect.width, self.rect.height)
-            if attacking_rect.colliderect(target.rect) and target.blocking == False:
-                target.health -= 10
-                target.hit = True 
-            elif attacking_rect.colliderect(target.rect) and target.blocking == True:
-                print("Blocked")
+            attacking_rect = pygame.Rect(self.rect.centerx - (1.2 * self.rect.width * self.flip), self.rect.y, 1.2 * self.rect.width, self.rect.height)
+
+            # Ellenőrizzük, hogy a támadás eltalálta-e a célt
+            if attacking_rect.colliderect(target.rect):
+                if target.blocking:
+                    print("Blocked")
+                else:
+                    if not target.hit:  # Csak akkor sebez, ha a target még nem kapott sebzést
+                        target.health -= 10
+                        target.hit = True  # Beállítjuk a hit flaget a célnak
+                
+                # Támadó játékos sebzése (ha a target is támad)
+                if target.attacking and not self.hit:
+                    self.health -= 10  # Támadó játékos sebzése
+                    self.hit = True  # Beállítjuk a hit flaget a támadónak
+            
+            self.attack_cooldown = 0  # Beállítjuk a támadási időzítőt
+
+
        # pygame.draw.rect(surface, (0,255,0), attacking_rect)
     #def attack_anim_end(self):
      #   self.attacking = False
@@ -236,11 +252,10 @@ class Fighter():
             self.stamina -= self.block_stamina_cost
             if self.stamina <= 0:
                 self.stop_block()
-
         else:
-            self.health -= 10
-            if self.health < 0:
-                self.health = 0
+            if not self.hit:  # Ellenőrizzük, hogy még nem kapott sebzést
+                self.health -= 10
+                self.hit = True  # Beállítjuk a hit flaget
 
 
 
