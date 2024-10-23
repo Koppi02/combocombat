@@ -1,0 +1,8 @@
+{
+    "name": "Koppi",
+    "size": 128,
+    "scale": 1.5,
+    "offset": [40, 20],
+    "sprite_sheet": "KoppiSpriteSheet.png",
+    "animation_steps": [7, 8, 1, 4, 4, 3, 11, 1]
+}
