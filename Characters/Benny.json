@@ -1,8 +1,8 @@
 {
     "name": "Benny",
-    "size": 128,
-    "scale": 1.5,
-    "offset": [40, 20],
+    "health": 100,
+    "dmg1": 10,
+    "dmg2": 20,
     "sprite_sheet": "BennySpriteSheet.png",
     "animation_steps": [1, 1, 1, 1, 1, 1, 1, 1]
 }

@@ -1,4 +1,5 @@
 import pygame
+pygame.init()
 # Beállítások
 
     # Ablak - Ennek a játékos által is változtathatónak kell lennie (majd beolvassa valamilyen JSON file-ból)
@@ -11,6 +12,9 @@ YELLOW = (255,255,0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (0, 40, 190)
+    # Betűtípusok
+COUNT_FONT = pygame.font.Font('./GothicPixels.ttf', 80)
+SCORE_FONT = pygame.font.Font('./GothicPixels.ttf', 30)
     # Játék Beállítások
 intro_count = 3
 ROUND_OVER_COOLDOWN = 5000
