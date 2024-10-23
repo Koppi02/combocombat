@@ -1,14 +1,16 @@
 import pygame
+from settings import *
 
 class Fighter():
     def __init__(self, player, x, y, flip, data, sprite_sheet, animation_steps):
         self.player = player
+        self.data = data
         self.size= data[0]
         self.image_scale = data[1]
         self.offset= data[2]
         self.flip = flip
         self.animation_list = self.load_images(sprite_sheet, animation_steps)
-        self.action = 0 #0:áll 1:fut 2:ugrik 3:attack1 4:attack2 5:találat 6:halál
+        self.action = 0 #0:áll 1:fut 2:ugrik 3:attack1 4:attack2 5:találat 6:halál 7:blokk
         self.frame_index = 0
         self.image = self.animation_list[self.action][self.frame_index]
         self.update_time = pygame.time.get_ticks()
@@ -63,29 +65,29 @@ class Fighter():
             # 1 játékos
             if self.player == 1:
                 #mozgás
-                if key[pygame.K_a] and self.hit == False and self.blocking == False:
+                if key[P1_LEFT] and self.hit == False and self.blocking == False:
                     dx = -SPEED
                     self.running = True
-                if key[pygame.K_d] and self.hit == False and self.blocking == False:
+                if key[P1_RIGHT] and self.hit == False and self.blocking == False:
                     dx = SPEED
                     self.running = True
                 #jump
-                if key[pygame.K_w] and self.jump == False and self.blocking == False:
+                if key[P1_JUMP] and self.jump == False and self.blocking == False:
                     self.vel_y = - 30
                     self.jump = True
 
                 #támadás
-                if key[pygame.K_r] or key[pygame.K_t]:
+                if key[P1_ATK1] or key[P1_ATK2]:
                     self.attack(target)
 
                     #melyik támadást használod
-                    if key[pygame.K_r]:
+                    if key[P1_ATK1]:
                         self.attack_type = 1
-                    if key[pygame.K_t]:
+                    if key[P1_ATK2]:
                         self.attack_type = 2
 
                 #block
-                if key[pygame.K_z]:
+                if key[P1_BLOCK]:
                     self.blocking = True
                 else:
                     self.blocking = False
@@ -93,29 +95,29 @@ class Fighter():
              # 2 játékos
             if self.player == 2:
                         # mozgás
-                        if key[pygame.K_LEFT] and self.hit == False and self.blocking == False:
+                        if key[P2_LEFT] and self.hit == False and self.blocking == False:
                             dx = -SPEED
                             self.running = True
-                        if key[pygame.K_RIGHT] and self.hit == False and self.blocking == False:
+                        if key[P2_RIGHT] and self.hit == False and self.blocking == False:
                             dx = SPEED
                             self.running = True
                         # jump
-                        if key[pygame.K_UP] and self.jump == False and self.blocking == False:
+                        if key[P2_JUMP] and self.jump == False and self.blocking == False:
                             self.vel_y = - 30
                             self.jump = True
 
                         # támadás
-                        if key[pygame.K_KP1] or key[pygame.K_KP2]:
+                        if key[P2_ATK1] or key[P2_ATK2]:
                             self.attack(target)
 
                             # melyik támadást használod
-                            if key[pygame.K_KP1]:
+                            if key[P2_ATK1]:
                                 self.attack_type = 1
-                            if key[pygame.K_KP2]:
+                            if key[P2_ATK2]:
                                 self.attack_type = 2
 
                         #block
-                        if key[pygame.K_KP3]:
+                        if key[P2_BLOCK]:
                             self.blocking = True
                         else:
                             self.blocking = False
@@ -173,11 +175,8 @@ class Fighter():
         else:
             self.update_action(0) #0:áll
 
-        # két frame közötti várakozás
-        animation_cooldown = 41 # millisec
-
         self.image = self.animation_list[self.action][self.frame_index]
-        if pygame.time.get_ticks() - self.update_time > animation_cooldown:
+        if pygame.time.get_ticks() - self.update_time > ANIMATION_SPEED:
             self.frame_index += 1
             self.update_time = pygame.time.get_ticks()
         # check ha az animáció végzet

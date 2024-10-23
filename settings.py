@@ -1,3 +1,4 @@
+import pygame
 # Beállítások
 
     # Ablak - Ennek a játékos által is változtathatónak kell lennie (majd beolvassa valamilyen JSON file-ból)
@@ -17,3 +18,18 @@ ROUND_OVER_COOLDOWN = 5000
 SPRITE_SIZE = 128
 SPRITE_SCALE = 1.5
 SPRITE_OFFSET = [40, 20]
+ANIMATION_SPEED = 41
+    # Irányítás
+P1_LEFT = pygame.K_a
+P1_RIGHT = pygame.K_d
+P1_JUMP = pygame.K_w
+P1_ATK1 = pygame.K_r
+P1_ATK2 = pygame.K_t
+P1_BLOCK = pygame.K_z
+
+P2_LEFT = pygame.K_LEFT
+P2_RIGHT = pygame.K_RIGHT
+P2_JUMP = pygame.K_UP
+P2_ATK1 = pygame.K_COMMA
+P2_ATK2 = pygame.K_PERIOD
+P2_BLOCK = pygame.K_MINUS
