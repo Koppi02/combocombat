@@ -1,8 +1,9 @@
 {
     "name": "Koppi",
     "health": 100,
-    "dmg1": 10,
-    "dmg2": 50,
+    "stamina": 200,
+    "dmg1": 5,
+    "dmg2": 10,
     "sprite_sheet": "KoppiSpriteSheet.png",
     "animation_steps": [7, 8, 1, 4, 4, 3, 11, 1]
 }

@@ -1,6 +1,7 @@
 {
     "name": "Benny",
-    "health": 100,
+    "health": 200,
+    "stamina": 100,
     "dmg1": 10,
     "dmg2": 20,
     "sprite_sheet": "BennySpriteSheet.png",

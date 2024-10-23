@@ -16,10 +16,13 @@ fighters = import_characters()
 def start_menu():
     menu_running = True
     while menu_running:
-        screen.fill(WHITE)
+        draw_bg(menu_image)
 
+        draw_centered_text('Combocombat', COUNT_FONT, BLACK, SCREEN_WIDTH / 2 + 5, SCREEN_HEIGHT / 3 + 5)
         draw_centered_text('Combocombat', COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
+        draw_centered_text('Press ENTER to Start', SCORE_FONT, BLACK, SCREEN_WIDTH / 2 + 2, SCREEN_HEIGHT / 2 + 2)
         draw_centered_text('Press ENTER to Start', SCORE_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        draw_centered_text('Press ESC to Quit', SCORE_FONT, BLACK, SCREEN_WIDTH / 2 + 2, SCREEN_HEIGHT / 1.5 + 2)
         draw_centered_text('Press ESC to Quit', SCORE_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.5)
 
         for event in pygame.event.get():
@@ -43,6 +46,7 @@ round_over = False
 
 #háttér beállítás
 bg_image = pygame.image.load('./Maps/testMap.png').convert_alpha()
+menu_image = pygame.image.load('./MenuArt.png').convert_alpha()
 
 #kiírja amit kell
 def draw_text(text, font, text_col, x, y):
@@ -60,15 +64,15 @@ def draw_bg(image):
     screen.blit(scaled_bg, (0, 0))
 
 #hp bar és stamina bar kirajzolása
-def draw_health_and_stamina_bar(health,stamina, x, y):
+def draw_health_and_stamina_bar(health, max_health, stamina, max_stamina, x, y):
     # hp bar
-    health_ratio = health / 100
+    health_ratio = health / max_health
     pygame.draw.rect(screen, WHITE, (x-2, y - 2, 404, 34))
     pygame.draw.rect(screen, RED, (x, y , 400, 30))
     pygame.draw.rect(screen, YELLOW, (x, y, 400*health_ratio, 30))
 
     #stamina bar
-    stamina_ratio = stamina / 100
+    stamina_ratio = stamina / max_stamina
     pygame.draw.rect(screen, WHITE, (x-2, y + 40, 404, 20))
     pygame.draw.rect(screen, BLUE, (x, y + 40, 400*stamina_ratio, 20))
 
@@ -84,8 +88,8 @@ if start_menu():
         draw_bg(bg_image)  # Háttér kirajzolása
 
         # HP bar, játékosok, stb. kirajzolása
-        draw_health_and_stamina_bar(fighter_1.health,fighter_1.stamina, 20, 20)
-        draw_health_and_stamina_bar(fighter_2.health,fighter_2.stamina, 580, 20)
+        draw_health_and_stamina_bar(fighter_1.health, fighter_1.max_health, fighter_1.stamina, fighter_1.max_stamina, 20, 20)
+        draw_health_and_stamina_bar(fighter_2.health, fighter_2.max_health, fighter_2.stamina, fighter_2.max_stamina, 580, 20)
         draw_text("P1: " + str(score[0]), SCORE_FONT, RED, 20, 80)
         draw_text("P2: " + str(score[1]), SCORE_FONT, RED, 580, 80)
 

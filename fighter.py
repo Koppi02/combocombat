@@ -24,15 +24,13 @@ class Fighter():
         self.attack_type = 0
         self.attack_cooldown = 0
         self.hit = False
-        self.health = 100
-        self.stamina = 100
-        self.max_stamina = 100
+        self.max_health = data[3]
+        self.health = self.max_health
+        self.max_stamina = data[4]
+        self.stamina = self.max_stamina
         self.stamina_regen_rate = 0.2
-        self.block_uses = 3
-        self.max_block_uses = 3
-        self.block_regen_time = 1000
-        self.last_block_time = 0
-        self.block_stamina_cost = 10
+        self.dmg1 = data[5]
+        self.dmg2 = data[6]
         self.alive = True
         self.sprite_sheet = sprite_sheet
         self.animation_steps = animation_steps
@@ -197,10 +195,6 @@ class Fighter():
             else:
                 self.frame_index = 0  # Visszaállítjuk az indexet
 
-
-
-
-
     def attack(self, target):
         if self.attack_cooldown == 0 and self.stamina > 20:
             self.attacking = True
@@ -213,16 +207,17 @@ class Fighter():
                     target.stamina -= 20
                     print("Blocked")
                 else:
-                    if not target.hit:  # Csak akkor sebez, ha a target még nem kapott sebzést
-                        target.health -= 10
-                        target.hit = True  # Beállítjuk a hit flaget a célnak
+                        if not target.hit:  # Csak akkor sebez, ha a target még nem kapott sebzést
+                            target.health -= self.dmg1 if self.attack_type == 1 else self.dmg2
+                            target.hit = True  # Beállítjuk a hit flaget a célnak
                 
                 # Támadó játékos sebzése (ha a target is támad)
                 if target.attacking and not self.hit:
-                    self.health -= 10  # Támadó játékos sebzése
+                    self.health -= target.dmg1 if target.attack_type == 1 else target.dmg2  # Támadó játékos sebzése
                     self.hit = True  # Beállítjuk a hit flaget a támadónak
+                    self.attack_cooldown = 5
             
-            self.attack_cooldown = 0  # Beállítjuk a támadási időzítőt
+             # self.attack_cooldown = 0  # Beállítjuk a támadási időzítőt
 
 
        # pygame.draw.rect(surface, (0,255,0), attacking_rect)
@@ -233,9 +228,6 @@ class Fighter():
         if self.stamina < self.max_stamina and not self.attacking and not self.blocking:
             self.stamina += self.stamina_regen_rate
 
-        if pygame.time.get_ticks() - self.last_block_time > self.block_regen_time and self.block_uses < self.max_block_uses:
-            self.block_uses = self.max_block_uses
-
     def update_action(self, new_action):
     #nézze meg hogy más e az action
         if new_action != self.action:
@@ -245,5 +237,5 @@ class Fighter():
 
     def draw(self, surface):
         img = pygame.transform.flip(self.image, self.flip, False)
-       # pygame.draw.rect(surface, (250, 0, 0), self.rect)
+        # pygame.draw.rect(surface, (250, 0, 0), self.rect)
         surface.blit(img, (self.rect.x -  (self.offset[0]*self.image_scale), self.rect.y - (self.offset[1]*self.image_scale)))
