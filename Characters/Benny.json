@@ -4,5 +4,5 @@
     "scale": 1.5,
     "offset": [40, 20],
     "sprite_sheet": "BennySpriteSheet.png",
-    "animation_steps": [53, 12, 16, 15, 15, 12, 54, 1]
+    "animation_steps": [1, 1, 1, 1, 1, 1, 1, 1]
 }

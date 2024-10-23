@@ -87,7 +87,7 @@ class Fighter():
                         self.attack_type = 2
 
                 #block
-                if key[P1_BLOCK]:
+                if key[P1_BLOCK] and self.stamina >= 20:
                     self.blocking = True
                 else:
                     self.blocking = False
@@ -117,7 +117,7 @@ class Fighter():
                                 self.attack_type = 2
 
                         #block
-                        if key[P2_BLOCK]:
+                        if key[P2_BLOCK] and self.stamina >= 20:
                             self.blocking = True
                         else:
                             self.blocking = False
@@ -153,7 +153,7 @@ class Fighter():
         self.rect.y += dy
 
     #animáció kezelése
-    def update(self, target):
+    def update(self):
         # Ellenőrizd, hogy a játékos halott-e
         if not self.alive:
             self.update_action(6)  # Halott állapot
@@ -191,7 +191,7 @@ class Fighter():
                 self.hit = False  # Reseteljük a hit állapotot
             elif self.action in [3, 4]:  # Támadás animáció
                 self.attacking = False  # Támadás befejezése
-                self.attack_cooldown = 20  # Támadási időzítő
+                self.attack_cooldown = 1  # Támadási időzítő
             elif self.action == 6:  # Halál animáció
                 self.frame_index = len(self.animation_list[self.action]) - 1  # Maradjunk az utolsó frame-nél
             else:
@@ -210,6 +210,7 @@ class Fighter():
             # Ellenőrizzük, hogy a támadás eltalálta-e a célt
             if attacking_rect.colliderect(target.rect):
                 if target.blocking:
+                    target.stamina -= 20
                     print("Blocked")
                 else:
                     if not target.hit:  # Csak akkor sebez, ha a target még nem kapott sebzést
@@ -228,13 +229,6 @@ class Fighter():
     #def attack_anim_end(self):
      #   self.attacking = False
 
-
-    def block(self, target):
-        current_time = pygame.time.get_ticks()
-        if self.block_uses > 0:
-            self.block_uses -= self.block_stamina_cost
-            self.last_block_time = current_time
-
     def regen(self):
         if self.stamina < self.max_stamina and not self.attacking and not self.blocking:
             self.stamina += self.stamina_regen_rate
@@ -242,33 +236,12 @@ class Fighter():
         if pygame.time.get_ticks() - self.last_block_time > self.block_regen_time and self.block_uses < self.max_block_uses:
             self.block_uses = self.max_block_uses
 
-
-    def stop_block(self):
-        self.blocking = False
-
-
-    def take_hit(self):
-        if self.blocking:
-            self.stamina -= self.block_stamina_cost
-            if self.stamina <= 0:
-                self.stop_block()
-        else:
-            if not self.hit:  # Ellenőrizzük, hogy még nem kapott sebzést
-                self.health -= 10
-                self.hit = True  # Beállítjuk a hit flaget
-
-
-
-
     def update_action(self, new_action):
     #nézze meg hogy más e az action
         if new_action != self.action:
             self.action = new_action
             self.frame_index = 0
             self.update_time = pygame.time.get_ticks()
-
-
-
 
     def draw(self, surface):
         img = pygame.transform.flip(self.image, self.flip, False)
