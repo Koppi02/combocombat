@@ -107,7 +107,7 @@ class Fighter():
                             self.jump = True
 
                         # támadás
-                        if key[P2_ATK1] or key[P2_ATK2]:
+                        if (key[P2_ATK1] or key[P2_ATK2]) and self.hit == False:
                             self.attack(target)
 
                             # melyik támadást használod
@@ -178,7 +178,10 @@ class Fighter():
             self.update_action(0)  # Állás
 
         # Frissítjük a jelenlegi képet az animációs listából
-        self.image = self.animation_list[self.action][self.frame_index]
+        try: 
+            self.image = self.animation_list[self.action][self.frame_index]
+        except:
+            print("Sprite index out of range.")
 
         # Árnyék
         self.image_mask = pygame.mask.from_surface(self.image).outline() if self.flip == False else pygame.mask.from_surface(pygame.transform.flip(self.image, True, False)).outline()
@@ -233,7 +236,7 @@ class Fighter():
                 # Támadó játékos sebzése (ha a target is támad)
                 if target.attacking and not self.hit:
                     self.health -= target.dmg1 if target.attack_type == 1 else target.dmg2  # Támadó játékos sebzése
-                    self.hit = True  # Beállítjuk a hit flaget a támadónak
+                    # self.hit = True  # Beállítjuk a hit flaget a támadónak
                     self.attack_cooldown = 5 # Összeütés bünti
             
              # self.attack_cooldown = 0  # Beállítjuk a támadási időzítőt

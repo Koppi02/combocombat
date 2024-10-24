@@ -1,7 +1,7 @@
 {
     "name": "Koppi",
     "health": 100,
-    "stamina": 100,
+    "stamina": 200,
     "dmg1": 5,
     "dmg2": 10,
     "sprite_sheet": "KoppiSpriteSheet.png",

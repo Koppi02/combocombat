@@ -164,9 +164,9 @@ while True:
                     round_over_time = pygame.time.get_ticks()
 
                 else:
-                    if score[0] >= WINNING_SCORE:
 
-                        result = winner_screen(fighter_1.name)
+                    if score[0] >= WINNING_SCORE or score[1] >= WINNING_SCORE:
+                        result = winner_screen(fighter_1.name if score[0] > score[1] else fighter_2.name)
                         if result == 'restart':
                             score = [0, 0]
                             fighter_1 = Fighter(1, 200, 310, False, fighters[2].data, fighters[2].sprite_sheet, fighters[2].animation_steps)
@@ -177,28 +177,6 @@ while True:
                         else:
                             run = False
                         continue
-
-                    elif score[1] >= WINNING_SCORE:
-                        result = winner_screen(fighter_2.name)
-                        if result == 'restart':
-                            score = [0, 0]
-                            fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_sheet,
-                                                fighters[0].animation_steps)
-                            fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet,
-                                                fighters[1].animation_steps)
-                        elif result == 'menu':
-                            score = [0, 0]
-                            run = start_menu()
-                        else:
-                            run = False
-                        continue
-
-                        round_over = False
-                        intro_count = 3
-                        fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_sheet,
-                                            fighters[0].animation_steps)
-                        fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet,
-                                            fighters[1].animation_steps)
             else:
                 # screen.blit(victory_img, (360, 150))
                 draw_centered_text(f'{winner} wins!', COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
@@ -211,4 +189,4 @@ while True:
 
             # Frissíti a képet
             pygame.display.update()
-pygame.quit()
+    pygame.quit()
