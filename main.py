@@ -14,8 +14,11 @@ fighters = import_characters()
 
 # Főmenü
 def start_menu():
+    pygame.mixer.music.load('./Music/menu_music.mp3')
+    pygame.mixer.music.play(-1)
     menu_running = True
     while menu_running:
+
         draw_bg(menu_image)
 
         draw_centered_text('Combocombat', COUNT_FONT, BLACK, SCREEN_WIDTH / 2 + 5, SCREEN_HEIGHT / 3 + 5)
