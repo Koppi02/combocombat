@@ -1,9 +1,9 @@
 {
     "name": "Benny",
     "health": 200,
-    "stamina": 100,
+    "stamina": 50,
     "dmg1": 10,
     "dmg2": 20,
     "sprite_sheet": "BennySpriteSheet.png",
-    "animation_steps": [1, 1, 1, 1, 1, 1, 1, 1]
+    "animation_steps": [7, 1, 1, 1, 1, 1, 1, 1]
 }
