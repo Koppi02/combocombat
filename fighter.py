@@ -1,5 +1,6 @@
 import pygame
 from settings import *
+import math
 
 class Fighter():
     def __init__(self, player, x, y, flip, data, sprite_sheet, animation_steps):
@@ -180,7 +181,24 @@ class Fighter():
         self.image = self.animation_list[self.action][self.frame_index]
 
         # Árnyék
-        self.image_mask = pygame.mask.from_surface(self.image).outline()
+        self.image_mask = pygame.mask.from_surface(self.image).outline() if self.flip == False else pygame.mask.from_surface(pygame.transform.flip(self.image, True, False)).outline()
+        self.image_mask = [(x + self.rect.x - self.rect.size[0], y + self.rect.y + 20) for x, y in self.image_mask]
+
+        sun_pos = pygame.Vector2(SCREEN_WIDTH/8, 0)
+        target_pos = pygame.Vector2(0, SCREEN_HEIGHT)
+        sun_angle = math.atan2((sun_pos.x - target_pos.x), (sun_pos.y - target_pos.y))
+
+        self.shadows = []
+
+        for x, y in self.image_mask:
+
+            shadow_height = (500 - y) * 1.3
+            shadow_width = shadow_height * math.tan(sun_angle)
+            shadow_point = (x + shadow_width, y + shadow_height)
+            self.shadows.append(shadow_point)
+
+        self.shadows_flipped = self.shadows.reverse()
+        print(self.shadows_flipped)
         
         # Animációs időzítés
         if pygame.time.get_ticks() - self.update_time > ANIMATION_SPEED:
@@ -243,3 +261,4 @@ class Fighter():
         img = pygame.transform.flip(self.image, self.flip, False)
         # pygame.draw.rect(surface, (250, 0, 0), self.rect)
         surface.blit(img, (self.rect.x -  (self.offset[0]*self.image_scale), self.rect.y - (self.offset[1]*self.image_scale)))
+        pygame.draw.polygon(surface, (0, 0, 0), self.shadows)
