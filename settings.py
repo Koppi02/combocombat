@@ -19,7 +19,6 @@ SCORE_FONT = pygame.font.Font('./DoubleHomicide.ttf', 30)
     # Játék Beállítások
 intro_count = 3
 ROUND_OVER_COOLDOWN = 5000
-WINNING_SCORE = 3
     # Sprite Beállítások - Mostmár egységesnek kell lennie mindegyik karakternek (Mert miért lenne nem egységes?)
 SPRITE_SIZE = 128
 SPRITE_SCALE = 1.7
