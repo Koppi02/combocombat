@@ -196,9 +196,6 @@ class Fighter():
             shadow_width = shadow_height * math.tan(sun_angle)
             shadow_point = (x + shadow_width, y + shadow_height)
             self.shadows.append(shadow_point)
-
-        self.shadows_flipped = self.shadows.reverse()
-        print(self.shadows_flipped)
         
         # Animációs időzítés
         if pygame.time.get_ticks() - self.update_time > ANIMATION_SPEED:
