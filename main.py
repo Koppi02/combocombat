@@ -101,7 +101,7 @@ def draw_health_and_stamina_bar(health, max_health, stamina, max_stamina, x, y):
     pygame.draw.rect(screen, BLUE, (x, y + 40, 400*stamina_ratio, 20))
 
 # Karakterek Kiválasztása
-fighter_1 = Fighter(1, 200, 310, False, fighters[2].data, fighters[2].sprite_sheet, fighters[2].animation_steps)
+fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_sheet, fighters[0].animation_steps)
 fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet, fighters[1].animation_steps)
 
 # Játék Loop
