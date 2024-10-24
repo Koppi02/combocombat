@@ -223,7 +223,7 @@ class Fighter():
             # Ellenőrizzük, hogy a támadás eltalálta-e a célt
             if attacking_rect.colliderect(target.rect):
                 if target.blocking:
-                    target.stamina -= target.dmg1 if target.attack_type == 1 else target.dmg2
+                    target.stamina -= self.dmg1 if self.attack_type == 1 else self.dmg2
                     print("Blocked")
                 else:
                         if not target.hit:  # Csak akkor sebez, ha a target még nem kapott sebzést
