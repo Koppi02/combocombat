@@ -206,7 +206,7 @@ while True:
                     round_over = False
                     intro_count = 3
                     # Új harcosok inicializálása
-                    fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_sheet, fighters[0].animation_steps)
+                    fighter_1 = Fighter(1, 200, 310, False, fighters[2].data, fighters[2].sprite_sheet, fighters[2].animation_steps)
                     fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet, fighters[1].animation_steps)
 
             # Frissíti a képet
