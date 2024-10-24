@@ -109,7 +109,7 @@ if start_menu():
         draw_health_and_stamina_bar(fighter_1.health, fighter_1.max_health, fighter_1.stamina, fighter_1.max_stamina, 20, 20)
         draw_health_and_stamina_bar(fighter_2.health, fighter_2.max_health, fighter_2.stamina, fighter_2.max_stamina, 580, 20)
         draw_text(f"{fighter_1.name}: " + str(score[0]), SCORE_FONT, RED, 20, 80)
-        draw_text(f"{fighter_2.name}: " + str(score[0]), SCORE_FONT, RED, 580, 80)
+        draw_text(f"{fighter_2.name}: " + str(score[1]), SCORE_FONT, RED, 580, 80)
 
         # Visszaszámláló logika
         if intro_count <= 0:
