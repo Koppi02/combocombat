@@ -1,0 +1,9 @@
+{
+    "name": "Rocco",
+    "health": 200,
+    "stamina": 100,
+    "dmg1": 10,
+    "dmg2": 20,
+    "sprite_sheet": "RoccoSpriteSheet.png",
+    "animation_steps": [6, 7, 8, 7, 6, 3, 7, 1]
+}

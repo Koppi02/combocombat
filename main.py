@@ -112,7 +112,7 @@ while True:
         intro_count = 3
         round_over = False
 
-        fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_sheet, fighters[0].animation_steps)
+        fighter_1 = Fighter(1, 200, 310, False, fighters[2].data, fighters[2].sprite_sheet, fighters[2].animation_steps)
         fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet, fighters[1].animation_steps)
 
         run = True
@@ -169,10 +169,8 @@ while True:
                         result = winner_screen(fighter_1.name)
                         if result == 'restart':
                             score = [0, 0]
-                            fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_sheet,
-                                                fighters[0].animation_steps)
-                            fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet,
-                                                fighters[1].animation_steps)
+                            fighter_1 = Fighter(1, 200, 310, False, fighters[2].data, fighters[2].sprite_sheet, fighters[2].animation_steps)
+                            fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet, fighters[1].animation_steps)
                         elif result == 'menu':
                             score = [0, 0]
                             run = start_menu()
