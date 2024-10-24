@@ -2,6 +2,7 @@ import pygame
 from fighter import Fighter
 from import_characters import *
 from settings import *
+from settings import intro_count
 
 pygame.init()
 
@@ -42,6 +43,25 @@ def start_menu():
                     return False
         pygame.display.update()
     return True
+
+def winner_screen(winner):
+    screen.fill(BLACK)
+    draw_centered_text(f'{winner} wins the match', COUNT_FONT, RED, SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 3 )
+    draw_centered_text('Press ENTER to Play Again', SCORE_FONT, WHITE, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    draw_centered_text('Press ESC to Return to Menu', SCORE_FONT, WHITE, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.5)
+    pygame.display.update()
+
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    return 'restart'
+                elif event.key == pygame.K_ESCAPE:
+                    return 'menu'
 
 # Intró
 last_count_update = pygame.time.get_ticks()
@@ -85,80 +105,114 @@ fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_she
 fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet, fighters[1].animation_steps)
 
 # Játék Loop
-if start_menu():
-    run = True
-    while run:
-        clock.tick(FPS)
-        draw_bg(bg_image)  # Háttér kirajzolása
+while True:
+    if start_menu():
 
-        if score[0] >= WINNING_SCORE:
-            draw_centered_text(f'{fighter_1.name} WINS THE MATCH', COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        score = [0, 0]
+        intro_count = 3
+        round_over = False
+
+        fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_sheet, fighters[0].animation_steps)
+        fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet, fighters[1].animation_steps)
+
+        run = True
+        while run:
+            clock.tick(FPS)
+            draw_bg(bg_image)  # Háttér kirajzolása
+
+            # HP bar, játékosok, stb. kirajzolása
+            draw_health_and_stamina_bar(fighter_1.health, fighter_1.max_health, fighter_1.stamina, fighter_1.max_stamina, 20, 20)
+            draw_health_and_stamina_bar(fighter_2.health, fighter_2.max_health, fighter_2.stamina, fighter_2.max_stamina, 580, 20)
+            draw_text(f"{fighter_1.name}: " + str(score[0]), SCORE_FONT, RED, 20, 80)
+            draw_text(f"{fighter_2.name}: " + str(score[1]), SCORE_FONT, RED, 580, 80)
+
+            # Visszaszámláló logika
+            if intro_count <= 0:
+                fighter_1.move(SCREEN_WIDTH, SCREEN_HEIGHT, screen, fighter_2, round_over)
+                fighter_2.move(SCREEN_WIDTH, SCREEN_HEIGHT, screen, fighter_1, round_over)
+            else:
+                draw_centered_text(str(intro_count), COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
+                if (pygame.time.get_ticks() - last_count_update) >= 1000:
+                    intro_count -= 1
+                    last_count_update = pygame.time.get_ticks()
+
+            # Fighter frissítés és kirajzolás
+            fighter_1.update()
+            fighter_2.update()
+            fighter_1.draw(screen)
+            fighter_2.draw(screen)
+            fighter_1.regen()
+            fighter_2.regen()
+
+            # Eseménykezelés
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+
+            # Nézze meg ha valaki vesztett
+            if not round_over:
+                winner = ''
+                if  fighter_1.alive == False:
+                    winner = fighter_2.name
+                    score[1] += 1
+                    round_over = True
+                    round_over_time = pygame.time.get_ticks()
+                elif fighter_2.alive == False:
+                    winner = fighter_1.name
+                    score[0] += 1
+                    round_over = True
+                    round_over_time = pygame.time.get_ticks()
+
+                else:
+                    if score[0] >= WINNING_SCORE:
+
+                        result = winner_screen(fighter_1.name)
+                        if result == 'restart':
+                            score = [0, 0]
+                            fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_sheet,
+                                                fighters[0].animation_steps)
+                            fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet,
+                                                fighters[1].animation_steps)
+                        elif result == 'menu':
+                            score = [0, 0]
+                            run = start_menu()
+                        else:
+                            run = False
+                        continue
+
+                    elif score[1] >= WINNING_SCORE:
+                        result = winner_screen(fighter_2.name)
+                        if result == 'restart':
+                            score = [0, 0]
+                            fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_sheet,
+                                                fighters[0].animation_steps)
+                            fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet,
+                                                fighters[1].animation_steps)
+                        elif result == 'menu':
+                            score = [0, 0]
+                            run = start_menu()
+                        else:
+                            run = False
+                        continue
+
+                        round_over = False
+                        intro_count = 3
+                        fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_sheet,
+                                            fighters[0].animation_steps)
+                        fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet,
+                                            fighters[1].animation_steps)
+            else:
+                # screen.blit(victory_img, (360, 150))
+                draw_centered_text(f'{winner} wins!', COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
+                if pygame.time.get_ticks() - round_over_time > ROUND_OVER_COOLDOWN:
+                    round_over = False
+                    intro_count = 3
+                    # Új harcosok inicializálása
+                    fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_sheet, fighters[0].animation_steps)
+                    fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet, fighters[1].animation_steps)
+
+            # Frissíti a képet
             pygame.display.update()
-            pygame.time.delay(3000)
-            run = False
-            break
-
-        elif score[1] >= WINNING_SCORE:
-            draw_centered_text(f'{fighter_2.name} WINS THE MATCH', COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-            pygame.display.update()
-            pygame.time.delay(3000)
-            run = False
-            break
-
-        # HP bar, játékosok, stb. kirajzolása
-        draw_health_and_stamina_bar(fighter_1.health, fighter_1.max_health, fighter_1.stamina, fighter_1.max_stamina, 20, 20)
-        draw_health_and_stamina_bar(fighter_2.health, fighter_2.max_health, fighter_2.stamina, fighter_2.max_stamina, 580, 20)
-        draw_text(f"{fighter_1.name}: " + str(score[0]), SCORE_FONT, RED, 20, 80)
-        draw_text(f"{fighter_2.name}: " + str(score[1]), SCORE_FONT, RED, 580, 80)
-
-        # Visszaszámláló logika
-        if intro_count <= 0:
-            fighter_1.move(SCREEN_WIDTH, SCREEN_HEIGHT, screen, fighter_2, round_over)
-            fighter_2.move(SCREEN_WIDTH, SCREEN_HEIGHT, screen, fighter_1, round_over)
-        else:
-            draw_centered_text(str(intro_count), COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
-            if (pygame.time.get_ticks() - last_count_update) >= 1000:
-                intro_count -= 1
-                last_count_update = pygame.time.get_ticks()
-
-        # Fighter frissítés és kirajzolás
-        fighter_1.update()
-        fighter_2.update()
-        fighter_1.draw(screen)
-        fighter_2.draw(screen)
-        fighter_1.regen()
-        fighter_2.regen()
-
-        # Eseménykezelés
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-
-        # Nézze meg ha valaki vesztett
-        if round_over == False:
-            winner = ''
-            if fighter_1.alive == False:
-                winner = fighter_2.name
-                score[1] += 1
-                round_over = True
-                round_over_time = pygame.time.get_ticks()
-            elif fighter_2.alive == False:
-                winner = fighter_1.name
-                score[0] += 1
-                round_over = True
-                round_over_time = pygame.time.get_ticks()
-        else:
-            # screen.blit(victory_img, (360, 150))
-            draw_centered_text(f'{winner} wins!', COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
-            if pygame.time.get_ticks() - round_over_time > ROUND_OVER_COOLDOWN:
-                round_over = False
-                intro_count = 3
-                # Új harcosok inicializálása
-                fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_sheet, fighters[0].animation_steps)
-                fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet, fighters[1].animation_steps)
-
-        # Frissíti a képet
-        pygame.display.update()
 
 
 pygame.quit()
