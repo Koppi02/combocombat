@@ -90,8 +90,8 @@ if start_menu():
         # HP bar, játékosok, stb. kirajzolása
         draw_health_and_stamina_bar(fighter_1.health, fighter_1.max_health, fighter_1.stamina, fighter_1.max_stamina, 20, 20)
         draw_health_and_stamina_bar(fighter_2.health, fighter_2.max_health, fighter_2.stamina, fighter_2.max_stamina, 580, 20)
-        draw_text("P1: " + str(score[0]), SCORE_FONT, RED, 20, 80)
-        draw_text("P2: " + str(score[1]), SCORE_FONT, RED, 580, 80)
+        draw_text(f"{fighter_1.name}: " + str(score[0]), SCORE_FONT, RED, 20, 80)
+        draw_text(f"{fighter_2.name}: " + str(score[0]), SCORE_FONT, RED, 580, 80)
 
         # Visszaszámláló logika
         if intro_count <= 0:
@@ -120,12 +120,12 @@ if start_menu():
         if round_over == False:
             winner = ''
             if fighter_1.alive == False:
-                winner = 'Player 2'
+                winner = fighter_2.name
                 score[1] += 1
                 round_over = True
                 round_over_time = pygame.time.get_ticks()
             elif fighter_2.alive == False:
-                winner = 'Player 1'
+                winner = fighter_1.name
                 score[0] += 1
                 round_over = True
                 round_over_time = pygame.time.get_ticks()

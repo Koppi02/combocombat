@@ -5,9 +5,10 @@ class Fighter():
     def __init__(self, player, x, y, flip, data, sprite_sheet, animation_steps):
         self.player = player
         self.data = data
-        self.size= data[0]
-        self.image_scale = data[1]
-        self.offset= data[2]
+        self.name = data[0]
+        self.size= SPRITE_SIZE
+        self.image_scale = SPRITE_SCALE
+        self.offset= SPRITE_OFFSET
         self.flip = flip
         self.animation_list = self.load_images(sprite_sheet, animation_steps)
         self.action = 0 #0:áll 1:fut 2:ugrik 3:attack1 4:attack2 5:találat 6:halál 7:blokk
@@ -24,13 +25,13 @@ class Fighter():
         self.attack_type = 0
         self.attack_cooldown = 0
         self.hit = False
-        self.max_health = data[3]
+        self.max_health = data[1]
         self.health = self.max_health
-        self.max_stamina = data[4]
+        self.max_stamina = data[2]
         self.stamina = self.max_stamina
         self.stamina_regen_rate = 0.2
-        self.dmg1 = data[5]
-        self.dmg2 = data[6]
+        self.dmg1 = data[3]
+        self.dmg2 = data[4]
         self.alive = True
         self.sprite_sheet = sprite_sheet
         self.animation_steps = animation_steps
@@ -85,7 +86,7 @@ class Fighter():
                         self.attack_type = 2
 
                 #block
-                if key[P1_BLOCK] and self.stamina >= 20:
+                if key[P1_BLOCK] and self.stamina >= (self.dmg1 if self.attack_type == 1 else self.dmg2):
                     self.blocking = True
                 else:
                     self.blocking = False
@@ -115,7 +116,7 @@ class Fighter():
                                 self.attack_type = 2
 
                         #block
-                        if key[P2_BLOCK] and self.stamina >= 20:
+                        if key[P2_BLOCK] and self.stamina >= (target.dmg1 if target.attack_type == 1 else target.dmg2):
                             self.blocking = True
                         else:
                             self.blocking = False
@@ -177,6 +178,9 @@ class Fighter():
 
         # Frissítjük a jelenlegi képet az animációs listából
         self.image = self.animation_list[self.action][self.frame_index]
+
+        # Árnyék
+        self.image_mask = pygame.mask.from_surface(self.image).outline()
         
         # Animációs időzítés
         if pygame.time.get_ticks() - self.update_time > ANIMATION_SPEED:
@@ -196,15 +200,15 @@ class Fighter():
                 self.frame_index = 0  # Visszaállítjuk az indexet
 
     def attack(self, target):
-        if self.attack_cooldown == 0 and self.stamina > 20:
+        if self.attack_cooldown == 0 and self.stamina > (self.dmg1 if self.attack_type == 1 else self.dmg2):
             self.attacking = True
-            self.stamina -= 20
+            self.stamina -= self.dmg1 if self.attack_type == 1 else self.dmg2
             attacking_rect = pygame.Rect(self.rect.centerx - (1.2 * self.rect.width * self.flip), self.rect.y, 1.2 * self.rect.width, self.rect.height)
 
             # Ellenőrizzük, hogy a támadás eltalálta-e a célt
             if attacking_rect.colliderect(target.rect):
                 if target.blocking:
-                    target.stamina -= 20
+                    target.stamina -= target.dmg1 if target.attack_type == 1 else target.dmg2
                     print("Blocked")
                 else:
                         if not target.hit:  # Csak akkor sebez, ha a target még nem kapott sebzést
@@ -215,7 +219,7 @@ class Fighter():
                 if target.attacking and not self.hit:
                     self.health -= target.dmg1 if target.attack_type == 1 else target.dmg2  # Támadó játékos sebzése
                     self.hit = True  # Beállítjuk a hit flaget a támadónak
-                    self.attack_cooldown = 5
+                    self.attack_cooldown = 5 # Összeütés bünti
             
              # self.attack_cooldown = 0  # Beállítjuk a támadási időzítőt
 
