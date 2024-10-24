@@ -18,6 +18,7 @@ def start_menu():
     while menu_running:
         draw_bg(menu_image)
 
+
         draw_centered_text('Combocombat', COUNT_FONT, BLACK, SCREEN_WIDTH / 2 + 5, SCREEN_HEIGHT / 3 + 5)
         draw_centered_text('Combocombat', COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
         draw_centered_text('Press ENTER to Start', SCORE_FONT, BLACK, SCREEN_WIDTH / 2 + 2, SCREEN_HEIGHT / 2 + 2)
@@ -86,6 +87,20 @@ if start_menu():
     while run:
         clock.tick(FPS)
         draw_bg(bg_image)  # Háttér kirajzolása
+
+        if score[0] >= WINNING_SCORE:
+            draw_centered_text(f'{fighter_1.name} WINS THE MATCH', COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+            pygame.display.update()
+            pygame.time.delay(3000)
+            run = False
+            break
+
+        elif score[1] >= WINNING_SCORE:
+            draw_centered_text(f'{fighter_2.name} WINS THE MATCH', COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+            pygame.display.update()
+            pygame.time.delay(3000)
+            run = False
+            break
 
         # HP bar, játékosok, stb. kirajzolása
         draw_health_and_stamina_bar(fighter_1.health, fighter_1.max_health, fighter_1.stamina, fighter_1.max_stamina, 20, 20)
