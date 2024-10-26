@@ -178,6 +178,8 @@ def draw_health_and_stamina_bar(health, max_health, stamina, max_stamina, x, y):
 fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_sheet, fighters[0].animation_steps)
 fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet, fighters[1].animation_steps)
 
+pygame.mixer.music.load("./Music/fight_music.wav")
+
 # Játék Loop
 while True:
     if start_menu():
@@ -227,9 +229,13 @@ while True:
                     if say_fight:
                         pygame.mixer.Sound.play(fight_sound)
                         say_fight = False
+                        # pygame.mixer.music.play(-1)
                 if (pygame.time.get_ticks() - last_count_update) >= 1000:
                     intro_count -= 1
                     last_count_update = pygame.time.get_ticks()
+                if intro_count == 0:
+                    pygame.mixer.music.play(-1)
+                
 
             # Fighter frissítés és kirajzolás
             fighter_1.update()
@@ -261,6 +267,7 @@ while True:
                 else:
 
                     if score[0] >= WINNING_SCORE or score[1] >= WINNING_SCORE:
+                        pygame.mixer.music.fadeout(1000)
                         result = winner_screen(fighter_1.name if score[0] > score[1] else fighter_2.name)
                         if result == 'restart':
                             score = [0, 0]
