@@ -197,7 +197,8 @@ while True:
 
         score = [0, 0]
         intro_count = 4
-        last_intro_count = intro_count + 1
+        say_ready = True
+        say_fight = True
         round_over = False
 
         run = True
@@ -216,17 +217,19 @@ while True:
                 fighter_1.move(SCREEN_WIDTH, SCREEN_HEIGHT, screen, fighter_2, round_over)
                 fighter_2.move(SCREEN_WIDTH, SCREEN_HEIGHT, screen, fighter_1, round_over)
             else:
-                if intro_count == 3:
+                if intro_count == 2:
                     draw_centered_text("READY", COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
-                    if intro_count != last_intro_count:
+                    if say_ready:
                         pygame.mixer.Sound.play(ready_sound)
+                        say_ready = False
                 if intro_count == 1:
                     draw_centered_text("Fight", COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
-                    pygame.mixer.Sound.play(fight_sound)
+                    if say_fight:
+                        pygame.mixer.Sound.play(fight_sound)
+                        say_fight = False
                 if (pygame.time.get_ticks() - last_count_update) >= 1000:
                     intro_count -= 1
                     last_count_update = pygame.time.get_ticks()
-                last_intro_count = intro_count
 
             # Fighter frissítés és kirajzolás
             fighter_1.update()
@@ -278,7 +281,9 @@ while True:
                 draw_centered_text(f'{winner} wins!', COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
                 if pygame.time.get_ticks() - round_over_time > ROUND_OVER_COOLDOWN:
                     round_over = False
-                    intro_count = 3
+                    intro_count = 4
+                    say_ready = True
+                    say_fight = True
                     # Új harcosok inicializálása
                     fighter_1 = Fighter(1, 200, 310, False, fighters[selected_fighter_indices[0]].data,
                             fighters[selected_fighter_indices[0]].sprite_sheet,
