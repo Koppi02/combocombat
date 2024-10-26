@@ -13,6 +13,8 @@ clock = pygame.time.Clock()
 
 fighters = import_characters()
 
+
+
 # Főmenü
 def start_menu():
     pygame.mixer.music.load('./Music/menu_music.mp3')
@@ -43,6 +45,77 @@ def start_menu():
                     return False
         pygame.display.update()
     return True
+
+class CharacterSelection:
+    def __init__(self, screen, fighters, font):
+        self.screen = screen
+        self.fighters = fighters
+        self.selected_characters = [None, None]
+        self.current_player = 0
+        self.font = font
+        self.done = False
+        self.current_index = 0
+        self.character_count = len(fighters)
+
+
+
+    def run(self):
+        selecting = True
+        while selecting:
+            self.draw()  # Draw the selection screen
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    return None
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        self.current_index = (self.current_index - 1) % self.character_count
+                    elif event.key == pygame.K_DOWN:
+                        self.current_index = (self.current_index + 1) % self.character_count
+                    elif event.key == pygame.K_RETURN:
+                        if self.selected_characters[self.current_player] is None:
+                            # választás
+                            self.selected_characters[self.current_player] = self.current_index
+                            print(f"Player {self.current_player + 1} selected fighter {self.current_index}")
+                            if self.current_player == 0:
+                                self.current_player = 1  # Switch P2
+                            else:
+                                selecting = False  # mind a 2 választot
+                    elif event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                        return None
+
+            pygame.display.update()
+
+        return self.selected_characters
+
+    def draw(self):
+        self.screen.fill((0, 0, 0))  # tiszta háttér
+
+        # kiírja a karaktereket és, hogy állnak
+        for idx, fighter in enumerate(self.fighters):
+            # milyen színe legyen a választotnak
+            if idx == self.current_index:
+                color = (255, 255, 0)  # citrom
+                # egy négyzetet rajzol a választot mögé
+                pygame.draw.rect(self.screen, (50, 50, 50), (80, 95 + idx * 40, 320, 50))  # szürke háttér
+                # a választottat felnagyítja
+                text_surface = self.font.render(f"{fighter.name}", True, color)
+                text_surface = pygame.transform.scale(text_surface, (
+                    int(text_surface.get_width() * 1.2), int(text_surface.get_height() * 1.2)))  # felnagyítás
+            else:
+                color = (255, 255, 255)  # fehér háttér
+                text_surface = self.font.render(f"{fighter.name}", True, color)
+
+            # nevek elhelyezése
+            self.screen.blit(text_surface,(100, 90 + idx * 40))
+
+        indicator_surface = self.font.render("Current Selection:", True, (255, 255, 0))
+        self.screen.blit(indicator_surface, (100, 50))
+
+        pygame.display.flip()
+
 
 def winner_screen(winner):
     screen.fill(BLACK)
@@ -108,12 +181,22 @@ fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_shee
 while True:
     if start_menu():
 
+        char_selection = CharacterSelection(screen, fighters, pygame.font.Font('./DoubleHomicide.ttf', 48))
+        selected_fighter_indices = char_selection.run()
+
+        if selected_fighter_indices is None:
+            break
+
+        fighter_1 = Fighter(1, 200, 310, False, fighters[selected_fighter_indices[0]].data,
+                            fighters[selected_fighter_indices[0]].sprite_sheet,
+                            fighters[selected_fighter_indices[0]].animation_steps)
+        fighter_2 = Fighter(2, 700, 310, True, fighters[selected_fighter_indices[1]].data,
+                            fighters[selected_fighter_indices[1]].sprite_sheet,
+                            fighters[selected_fighter_indices[1]].animation_steps)
+
         score = [0, 0]
         intro_count = 3
         round_over = False
-
-        fighter_1 = Fighter(1, 200, 310, False, fighters[2].data, fighters[2].sprite_sheet, fighters[2].animation_steps)
-        fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet, fighters[1].animation_steps)
 
         run = True
         while run:
