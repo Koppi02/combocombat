@@ -13,12 +13,13 @@ clock = pygame.time.Clock()
 
 fighters = import_characters()
 
-
+title_sound = pygame.mixer.Sound('./Sounds/title_sound.wav')
+ready_sound = pygame.mixer.Sound('./Sounds/ready.wav')
+fight_sound = pygame.mixer.Sound('./Sounds/fight.wav')
 
 # Főmenü
 def start_menu():
-    pygame.mixer.music.load('./Music/menu_music.mp3')
-    pygame.mixer.music.play(-1)
+    pygame.mixer.Sound.play(title_sound)
     menu_running = True
     while menu_running:
 
@@ -195,7 +196,8 @@ while True:
                             fighters[selected_fighter_indices[1]].animation_steps)
 
         score = [0, 0]
-        intro_count = 3
+        intro_count = 4
+        last_intro_count = intro_count + 1
         round_over = False
 
         run = True
@@ -214,10 +216,17 @@ while True:
                 fighter_1.move(SCREEN_WIDTH, SCREEN_HEIGHT, screen, fighter_2, round_over)
                 fighter_2.move(SCREEN_WIDTH, SCREEN_HEIGHT, screen, fighter_1, round_over)
             else:
-                draw_centered_text(str(intro_count), COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
+                if intro_count == 3:
+                    draw_centered_text("READY", COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
+                    if intro_count != last_intro_count:
+                        pygame.mixer.Sound.play(ready_sound)
+                if intro_count == 1:
+                    draw_centered_text("Fight", COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
+                    pygame.mixer.Sound.play(fight_sound)
                 if (pygame.time.get_ticks() - last_count_update) >= 1000:
                     intro_count -= 1
                     last_count_update = pygame.time.get_ticks()
+                last_intro_count = intro_count
 
             # Fighter frissítés és kirajzolás
             fighter_1.update()
@@ -252,8 +261,12 @@ while True:
                         result = winner_screen(fighter_1.name if score[0] > score[1] else fighter_2.name)
                         if result == 'restart':
                             score = [0, 0]
-                            fighter_1 = Fighter(1, 200, 310, False, fighters[2].data, fighters[2].sprite_sheet, fighters[2].animation_steps)
-                            fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet, fighters[1].animation_steps)
+                            fighter_1 = Fighter(1, 200, 310, False, fighters[selected_fighter_indices[0]].data,
+                                fighters[selected_fighter_indices[0]].sprite_sheet,
+                                fighters[selected_fighter_indices[0]].animation_steps)
+                            fighter_2 = Fighter(2, 700, 310, True, fighters[selected_fighter_indices[1]].data,
+                                fighters[selected_fighter_indices[1]].sprite_sheet,
+                                fighters[selected_fighter_indices[1]].animation_steps)
                         elif result == 'menu':
                             score = [0, 0]
                             run = start_menu()
@@ -267,8 +280,12 @@ while True:
                     round_over = False
                     intro_count = 3
                     # Új harcosok inicializálása
-                    fighter_1 = Fighter(1, 200, 310, False, fighters[2].data, fighters[2].sprite_sheet, fighters[2].animation_steps)
-                    fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet, fighters[1].animation_steps)
+                    fighter_1 = Fighter(1, 200, 310, False, fighters[selected_fighter_indices[0]].data,
+                            fighters[selected_fighter_indices[0]].sprite_sheet,
+                            fighters[selected_fighter_indices[0]].animation_steps)
+                    fighter_2 = Fighter(2, 700, 310, True, fighters[selected_fighter_indices[1]].data,
+                            fighters[selected_fighter_indices[1]].sprite_sheet,
+                            fighters[selected_fighter_indices[1]].animation_steps)
 
             # Frissíti a képet
             pygame.display.update()
