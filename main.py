@@ -162,21 +162,44 @@ def draw_bg(image):
     screen.blit(scaled_bg, (0, 0))
 
 #hp bar és stamina bar kirajzolása
-def draw_health_and_stamina_bar(health, max_health, stamina, max_stamina, x, y):
+def load_hud_sprite(sprite_sheet, width, height, steps, scale):
+    #extract képeket a sprite sheetből
+        img = pygame.image.load(sprite_sheet).convert_alpha()
+        progress_list = []
+        for x in range(steps):
+            frame = img.subsurface(0, x * height, width, height)
+            progress_list.append(pygame.transform.scale(frame, (width * scale, height * scale)))
+        return progress_list
+
+def draw_health_and_stamina_bar(health, max_health, stamina, max_stamina, x, y, flip):
     # hp bar
-    health_ratio = health / max_health
-    pygame.draw.rect(screen, WHITE, (x-2, y - 2, 404, 34))
-    pygame.draw.rect(screen, RED, (x, y , 400, 30))
-    pygame.draw.rect(screen, YELLOW, (x, y, 400*health_ratio, 30))
+    health_image_width = 102
+    health_image_height = 15
+    health_image_scale = 3
+    health_image = load_hud_sprite('./hpbar.png', health_image_width, health_image_height, 100, health_image_scale)
+    health_ratio = int(health / max_health * 100) - (int(health / max_health * 100) > 0)
+    screen.blit(health_image[health_ratio], (x, y)) if flip == False else screen.blit(pygame.transform.flip(health_image[health_ratio], True, False), (x - health_image_width * health_image_scale, y))
+    # pygame.draw.rect(screen, WHITE, (x-2, y - 2, 404, 34))
+    # pygame.draw.rect(screen, RED, (x, y , 400, 30))
+    # pygame.draw.rect(screen, YELLOW, (x, y, 400*health_ratio, 30))
 
     #stamina bar
     stamina_ratio = stamina / max_stamina
-    pygame.draw.rect(screen, WHITE, (x-2, y + 40, 404, 20))
-    pygame.draw.rect(screen, BLUE, (x, y + 40, 400*stamina_ratio, 20))
+    stamina_image_width = 88
+    stamina_image_height = 10
+    stamina_image_scale = 3
+    stamina_y = y + health_image_height * health_image_scale
+    stamina_image = load_hud_sprite('./staminabar.png', stamina_image_width, stamina_image_height, 100, stamina_image_scale)
+    stamina_ratio = int(stamina / max_stamina * 100) - (int(stamina / max_stamina * 100) > 0)
+    screen.blit(stamina_image[stamina_ratio], (x, stamina_y)) if flip == False else screen.blit(pygame.transform.flip(stamina_image[stamina_ratio], True, False), (x - stamina_image_width * stamina_image_scale, stamina_y))
 
-# Karakterek Kiválasztása
-fighter_1 = Fighter(1, 200, 310, False, fighters[0].data, fighters[0].sprite_sheet, fighters[0].animation_steps)
-fighter_2 = Fighter(2, 700, 310, True, fighters[1].data, fighters[1].sprite_sheet, fighters[1].animation_steps)
+
+
+def set_fighters():
+    global fighter_1 
+    global fighter_2
+    fighter_1 = Fighter(1, 200, 310, False, fighters[selected_fighter_indices[0]].data, fighters[selected_fighter_indices[0]].sprite_sheet, fighters[selected_fighter_indices[0]].animation_steps)
+    fighter_2 = Fighter(2, 700, 310, True, fighters[selected_fighter_indices[1]].data, fighters[selected_fighter_indices[1]].sprite_sheet, fighters[selected_fighter_indices[1]].animation_steps)
 
 pygame.mixer.music.load("./Music/fight_music.wav")
 
@@ -190,12 +213,7 @@ while True:
         if selected_fighter_indices is None:
             break
 
-        fighter_1 = Fighter(1, 200, 310, False, fighters[selected_fighter_indices[0]].data,
-                            fighters[selected_fighter_indices[0]].sprite_sheet,
-                            fighters[selected_fighter_indices[0]].animation_steps)
-        fighter_2 = Fighter(2, 700, 310, True, fighters[selected_fighter_indices[1]].data,
-                            fighters[selected_fighter_indices[1]].sprite_sheet,
-                            fighters[selected_fighter_indices[1]].animation_steps)
+        set_fighters()
 
         score = [0, 0]
         intro_count = 4
@@ -209,10 +227,10 @@ while True:
             draw_bg(bg_image)  # Háttér kirajzolása
 
             # HP bar, játékosok, stb. kirajzolása
-            draw_health_and_stamina_bar(fighter_1.health, fighter_1.max_health, fighter_1.stamina, fighter_1.max_stamina, 20, 20)
-            draw_health_and_stamina_bar(fighter_2.health, fighter_2.max_health, fighter_2.stamina, fighter_2.max_stamina, 580, 20)
-            draw_text(f"{fighter_1.name}: " + str(score[0]), SCORE_FONT, RED, 20, 80)
-            draw_text(f"{fighter_2.name}: " + str(score[1]), SCORE_FONT, RED, 580, 80)
+            draw_health_and_stamina_bar(fighter_1.health, fighter_1.max_health, fighter_1.stamina, fighter_1.max_stamina, SCREEN_WIDTH / 50, SCREEN_HEIGHT / 30, False)
+            draw_health_and_stamina_bar(fighter_2.health, fighter_2.max_health, fighter_2.stamina, fighter_2.max_stamina, SCREEN_WIDTH - SCREEN_WIDTH / 50, SCREEN_HEIGHT / 30, True)
+            draw_text(f"{fighter_1.name}: " + str(score[0]), SCORE_FONT, RED, SCREEN_WIDTH / 50, SCREEN_HEIGHT / 30 + 75)
+            draw_text(f"{fighter_2.name}: " + str(score[1]), SCORE_FONT, RED, SCREEN_WIDTH - SCREEN_WIDTH / 50 - SCORE_FONT.size(f"{fighter_2.name}: " + str(score[1]))[0], SCREEN_HEIGHT / 30 + 75)
 
             # Visszaszámláló logika
             if intro_count <= 0:
@@ -229,7 +247,7 @@ while True:
                     if say_fight:
                         pygame.mixer.Sound.play(fight_sound)
                         say_fight = False
-                        # pygame.mixer.music.play(-1)
+                        pygame.mixer.music.set_volume(1)
                 if (pygame.time.get_ticks() - last_count_update) >= 1000:
                     intro_count -= 1
                     last_count_update = pygame.time.get_ticks()
@@ -253,16 +271,12 @@ while True:
             # Nézze meg ha valaki vesztett
             if not round_over:
                 winner = ''
-                if  fighter_1.alive == False:
-                    winner = fighter_2.name
-                    score[1] += 1
+                if  fighter_1.alive == False or fighter_2.alive == False:
+                    winner = fighter_2.name if fighter_1. alive == False else fighter_1.name
+                    score[1 if fighter_1. alive == False else 0] += 1
                     round_over = True
                     round_over_time = pygame.time.get_ticks()
-                elif fighter_2.alive == False:
-                    winner = fighter_1.name
-                    score[0] += 1
-                    round_over = True
-                    round_over_time = pygame.time.get_ticks()
+                    pygame.mixer.music.fadeout(1000)
 
                 else:
 
@@ -271,12 +285,7 @@ while True:
                         result = winner_screen(fighter_1.name if score[0] > score[1] else fighter_2.name)
                         if result == 'restart':
                             score = [0, 0]
-                            fighter_1 = Fighter(1, 200, 310, False, fighters[selected_fighter_indices[0]].data,
-                                fighters[selected_fighter_indices[0]].sprite_sheet,
-                                fighters[selected_fighter_indices[0]].animation_steps)
-                            fighter_2 = Fighter(2, 700, 310, True, fighters[selected_fighter_indices[1]].data,
-                                fighters[selected_fighter_indices[1]].sprite_sheet,
-                                fighters[selected_fighter_indices[1]].animation_steps)
+                            set_fighters()
                         elif result == 'menu':
                             score = [0, 0]
                             run = start_menu()
@@ -284,20 +293,13 @@ while True:
                             run = False
                         continue
             else:
-                # screen.blit(victory_img, (360, 150))
                 draw_centered_text(f'{winner} wins!', COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
                 if pygame.time.get_ticks() - round_over_time > ROUND_OVER_COOLDOWN:
                     round_over = False
                     intro_count = 4
                     say_ready = True
                     say_fight = True
-                    # Új harcosok inicializálása
-                    fighter_1 = Fighter(1, 200, 310, False, fighters[selected_fighter_indices[0]].data,
-                            fighters[selected_fighter_indices[0]].sprite_sheet,
-                            fighters[selected_fighter_indices[0]].animation_steps)
-                    fighter_2 = Fighter(2, 700, 310, True, fighters[selected_fighter_indices[1]].data,
-                            fighters[selected_fighter_indices[1]].sprite_sheet,
-                            fighters[selected_fighter_indices[1]].animation_steps)
+                    set_fighters()
 
             # Frissíti a képet
             pygame.display.update()

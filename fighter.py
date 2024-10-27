@@ -229,22 +229,25 @@ class Fighter():
                     target.stamina -= self.dmg1 if self.attack_type == 1 else self.dmg2
                     print("Blocked")
                 else:
-                        if not target.hit:  # Csak akkor sebez, ha a target még nem kapott sebzést
-                            target.health -= self.dmg1 if self.attack_type == 1 else self.dmg2
-                            target.hit = True  # Beállítjuk a hit flaget a célnak
+                    if not target.hit:  # Csak akkor sebez, ha a target még nem kapott sebzést
+                        target.health -= self.dmg1 if self.attack_type == 1 else self.dmg2
+                        target.hit = True  # Beállítjuk a hit flaget a célnak
+                    # if target.attacking:
+                    #     self.health -= target.dmg1 if target.attack_type == 1 else target.dmg2
+                    #     self.hit = True
                 
                 # Támadó játékos sebzése (ha a target is támad)
-                if target.attacking and not self.hit:
-                    self.health -= target.dmg1 if target.attack_type == 1 else target.dmg2  # Támadó játékos sebzése
-                    # self.hit = True  # Beállítjuk a hit flaget a támadónak
-                    self.attack_cooldown = 5 # Összeütés bünti
+                # if target.attacking and not self.hit:
+                #     self.health -= target.dmg1 if target.attack_type == 1 else target.dmg2  # Támadó játékos sebzése
+                #     self.hit = True  # Beállítjuk a hit flaget a támadónak
+                #     # Összeütés bünti
+                #     self.attack_cooldown = 5
+                #     target.attack_cooldown = 5
             
              # self.attack_cooldown = 0  # Beállítjuk a támadási időzítőt
 
 
        # pygame.draw.rect(surface, (0,255,0), attacking_rect)
-    #def attack_anim_end(self):
-     #   self.attacking = False
 
     def regen(self):
         if self.stamina < self.max_stamina and not self.attacking and not self.blocking:
