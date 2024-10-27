@@ -171,25 +171,24 @@ def load_hud_sprite(sprite_sheet, width, height, steps, scale):
             progress_list.append(pygame.transform.scale(frame, (width * scale, height * scale)))
         return progress_list
 
-def draw_health_and_stamina_bar(health, max_health, stamina, max_stamina, x, y, flip):
+health_image_width = 102
+health_image_height = 15
+health_image_scale = 3
+health_image = load_hud_sprite('./hpbar.png', health_image_width, health_image_height, 100, health_image_scale)
+
+stamina_image_width = 88
+stamina_image_height = 10
+stamina_image_scale = 3
+stamina_image = load_hud_sprite('./staminabar.png', stamina_image_width, stamina_image_height, 100, stamina_image_scale)
+
+def draw_health_and_stamina_bar(health_image, health, max_health, stamina_image, stamina, max_stamina, x, y, flip):
     # hp bar
-    health_image_width = 102
-    health_image_height = 15
-    health_image_scale = 3
-    health_image = load_hud_sprite('./hpbar.png', health_image_width, health_image_height, 100, health_image_scale)
     health_ratio = int(health / max_health * 100) - (int(health / max_health * 100) > 0)
     screen.blit(health_image[health_ratio], (x, y)) if flip == False else screen.blit(pygame.transform.flip(health_image[health_ratio], True, False), (x - health_image_width * health_image_scale, y))
-    # pygame.draw.rect(screen, WHITE, (x-2, y - 2, 404, 34))
-    # pygame.draw.rect(screen, RED, (x, y , 400, 30))
-    # pygame.draw.rect(screen, YELLOW, (x, y, 400*health_ratio, 30))
 
     #stamina bar
     stamina_ratio = stamina / max_stamina
-    stamina_image_width = 88
-    stamina_image_height = 10
-    stamina_image_scale = 3
     stamina_y = y + health_image_height * health_image_scale
-    stamina_image = load_hud_sprite('./staminabar.png', stamina_image_width, stamina_image_height, 100, stamina_image_scale)
     stamina_ratio = int(stamina / max_stamina * 100) - (int(stamina / max_stamina * 100) > 0)
     screen.blit(stamina_image[stamina_ratio], (x, stamina_y)) if flip == False else screen.blit(pygame.transform.flip(stamina_image[stamina_ratio], True, False), (x - stamina_image_width * stamina_image_scale, stamina_y))
 
@@ -227,8 +226,8 @@ while True:
             draw_bg(bg_image)  # Háttér kirajzolása
 
             # HP bar, játékosok, stb. kirajzolása
-            draw_health_and_stamina_bar(fighter_1.health, fighter_1.max_health, fighter_1.stamina, fighter_1.max_stamina, SCREEN_WIDTH / 50, SCREEN_HEIGHT / 30, False)
-            draw_health_and_stamina_bar(fighter_2.health, fighter_2.max_health, fighter_2.stamina, fighter_2.max_stamina, SCREEN_WIDTH - SCREEN_WIDTH / 50, SCREEN_HEIGHT / 30, True)
+            draw_health_and_stamina_bar(health_image, fighter_1.health, fighter_1.max_health, stamina_image, fighter_1.stamina, fighter_1.max_stamina, SCREEN_WIDTH / 50, SCREEN_HEIGHT / 30, False)
+            draw_health_and_stamina_bar(health_image, fighter_2.health, fighter_2.max_health, stamina_image, fighter_2.stamina, fighter_2.max_stamina, SCREEN_WIDTH - SCREEN_WIDTH / 50, SCREEN_HEIGHT / 30, True)
             draw_text(f"{fighter_1.name}: " + str(score[0]), SCORE_FONT, RED, SCREEN_WIDTH / 50, SCREEN_HEIGHT / 30 + 75)
             draw_text(f"{fighter_2.name}: " + str(score[1]), SCORE_FONT, RED, SCREEN_WIDTH - SCREEN_WIDTH / 50 - SCORE_FONT.size(f"{fighter_2.name}: " + str(score[1]))[0], SCREEN_HEIGHT / 30 + 75)
 
