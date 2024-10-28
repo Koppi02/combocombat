@@ -2,9 +2,19 @@ import pygame
 pygame.init()
 # Beállítások
 
-    # Ablak - Ennek a játékos által is változtathatónak kell lennie (majd beolvassa valamilyen JSON file-ból)
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 600
+# Alap felbontás beállítása
+BASE_SCREEN_WIDTH = 1000
+BASE_SCREEN_HEIGHT = 600
+
+# Aktuális felbontás
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
+
+def calculate_scaling_factor():
+    width_scale = SCREEN_WIDTH / BASE_SCREEN_WIDTH
+    height_scale = SCREEN_HEIGHT / BASE_SCREEN_HEIGHT
+    return width_scale, height_scale
+
     # FPS
 FPS = 60
     # Színek
@@ -23,7 +33,7 @@ WINNING_SCORE = 3
     # Sprite Beállítások - Mostmár egységesnek kell lennie mindegyik karakternek (Mert miért lenne nem egységes?)
 SPRITE_SIZE = 128
 SPRITE_SCALE = 1.7
-SPRITE_OFFSET = [40, 20]
+SPRITE_OFFSET = [40 * calculate_scaling_factor()[0], 20 * calculate_scaling_factor()[1]]
 ANIMATION_SPEED = 75
     # Irányítás
 P1_LEFT = pygame.K_a

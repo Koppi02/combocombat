@@ -3,20 +3,29 @@ from settings import *
 import math
 
 class Fighter():
+    # Dinamikus skálázási tényezők
+    global width_scale, height_scale
+    width_scale, height_scale = calculate_scaling_factor()
+    global ground_level_y
+    ground_level_y = SCREEN_HEIGHT - 110 * height_scale  # A karakter „föld” szintjének magassága
     def __init__(self, player, x, y, flip, data, sprite_sheet, animation_steps):
         self.player = player
         self.data = data
         self.name = data[0]
-        self.size= SPRITE_SIZE
+        self.size = SPRITE_SIZE
         self.image_scale = SPRITE_SCALE
-        self.offset= SPRITE_OFFSET
+        self.offset = SPRITE_OFFSET
         self.flip = flip
         self.animation_list = self.load_images(sprite_sheet, animation_steps)
-        self.action = 0 #0:áll 1:fut 2:ugrik 3:attack1 4:attack2 5:találat 6:halál 7:blokk
+        self.action = 0  # 0: idle, 1: run, 2: jump, 3: attack1, 4: attack2, 5: hit, 6: death, 7: block
         self.frame_index = 0
         self.image = self.animation_list[self.action][self.frame_index]
         self.update_time = pygame.time.get_ticks()
-        self.rect = pygame.Rect((x, y, 80, 180 ))
+        
+        
+        
+        # Karakter téglalapja
+        self.rect = pygame.Rect((x, y, 80 * width_scale, 180 * height_scale))
         self.vel_y = 0
         self.running = False
         self.jump = False
@@ -38,120 +47,101 @@ class Fighter():
         self.animation_steps = animation_steps
 
     def load_images(self, sprite_sheet, animation_steps):
-        #extract képeket a sprite sheetből
+        width_scale, height_scale = calculate_scaling_factor()
         animation_list = []
         for y, animation in enumerate(animation_steps):
             temp_img_list = []
             for x in range(animation):
                 temp_img = sprite_sheet.subsurface(x * self.size, y * self.size, self.size, self.size)
-                temp_img_list.append(pygame.transform.scale(temp_img, (self.size * self.image_scale, self.size * self.image_scale)))
+                scaled_img = pygame.transform.scale(temp_img, (int(self.size * self.image_scale * width_scale),
+                                                               int(self.size * self.image_scale * height_scale)))
+                temp_img_list.append(scaled_img)
             animation_list.append(temp_img_list)
         return animation_list
-#1.08.21
 
     def move(self, screen_width, screen_height, surface, target, round_over):
-        SPEED = 10
-        GRAVITY = 2
-        dx = 0
-        dy = 0
+        width_scale, height_scale = calculate_scaling_factor()
+        SPEED = 10 * width_scale
+        GRAVITY = 2 * height_scale
+        dx, dy = 0, 0
         self.running = False
         self.attack_type = 0
 
-        # billenytű használat
+        # Billentyűk kezelése
         key = pygame.key.get_pressed()
 
-        #csak akkor tudsz mést csinálni ha nem támadsz
         if self.attacking == False and self.alive == True and round_over == False:
-            # 1 játékos
+            # 1. játékos mozgása
             if self.player == 1:
-                #mozgás
-                if key[P1_LEFT] and self.hit == False and self.blocking == False:
+                if key[P1_LEFT] and not self.hit and not self.blocking:
                     dx = -SPEED
                     self.running = True
-                if key[P1_RIGHT] and self.hit == False and self.blocking == False:
+                if key[P1_RIGHT] and not self.hit and not self.blocking:
                     dx = SPEED
                     self.running = True
-                #jump
-                if key[P1_JUMP] and self.jump == False and self.blocking == False:
-                    self.vel_y = - 30
+                if key[P1_JUMP] and not self.jump and not self.blocking:
+                    self.vel_y = -30 * height_scale
                     self.jump = True
-
-                #támadás
                 if key[P1_ATK1] or key[P1_ATK2]:
                     self.attack(target)
-
-                    #melyik támadást használod
                     if key[P1_ATK1]:
                         self.attack_type = 1
                     if key[P1_ATK2]:
                         self.attack_type = 2
-
-                #block
                 if key[P1_BLOCK] and self.stamina >= (self.dmg1 if self.attack_type == 1 else self.dmg2):
                     self.blocking = True
                 else:
                     self.blocking = False
 
-             # 2 játékos
+            # 2. játékos mozgása
             if self.player == 2:
-                        # mozgás
-                        if key[P2_LEFT] and self.hit == False and self.blocking == False:
-                            dx = -SPEED
-                            self.running = True
-                        if key[P2_RIGHT] and self.hit == False and self.blocking == False:
-                            dx = SPEED
-                            self.running = True
-                        # jump
-                        if key[P2_JUMP] and self.jump == False and self.blocking == False:
-                            self.vel_y = - 30
-                            self.jump = True
+                if key[P2_LEFT] and not self.hit and not self.blocking:
+                    dx = -SPEED
+                    self.running = True
+                if key[P2_RIGHT] and not self.hit and not self.blocking:
+                    dx = SPEED
+                    self.running = True
+                if key[P2_JUMP] and not self.jump and not self.blocking:
+                    self.vel_y = -30 * height_scale
+                    self.jump = True
+                if (key[P2_ATK1] or key[P2_ATK2]) and not self.hit:
+                    self.attack(target)
+                    if key[P2_ATK1]:
+                        self.attack_type = 1
+                    if key[P2_ATK2]:
+                        self.attack_type = 2
+                if key[P2_BLOCK] and self.stamina >= (target.dmg1 if target.attack_type == 1 else target.dmg2):
+                    self.blocking = True
+                else:
+                    self.blocking = False
 
-                        # támadás
-                        if (key[P2_ATK1] or key[P2_ATK2]) and self.hit == False:
-                            self.attack(target)
-
-                            # melyik támadást használod
-                            if key[P2_ATK1]:
-                                self.attack_type = 1
-                            if key[P2_ATK2]:
-                                self.attack_type = 2
-
-                        #block
-                        if key[P2_BLOCK] and self.stamina >= (target.dmg1 if target.attack_type == 1 else target.dmg2):
-                            self.blocking = True
-                        else:
-                            self.blocking = False
-
-        #gravitáció használata
+        # Gravitáció alkalmazása
         self.vel_y += GRAVITY
         dy += self.vel_y
 
-
-        #a játékos maradjon a pályán
+        # Játékos a pályán belül marad
         if self.rect.left + dx < 0:
-            dx = - self.rect.left
-        if self.rect.right + dx > screen_width:
-            dx = screen_width - self.rect.right
-        if self.rect.bottom + dy > screen_height - 110:
+            dx = -self.rect.left
+        if self.rect.right + dx > SCREEN_WIDTH:
+            dx = SCREEN_WIDTH - self.rect.right
+        if self.rect.bottom + dy > ground_level_y:
             self.vel_y = 0
             self.jump = False
-            dy = screen_height -110 -self.rect.bottom
+            dy = SCREEN_HEIGHT - 110 * height_scale - self.rect.bottom
 
-        #egymás felé néznek
+        # Egymás felé néznek
         if target.rect.centerx > self.rect.centerx:
             self.flip = False
         else:
             self.flip = True
 
-        # attack visszaszámláló
+        # Támadás visszaszámláló
         if self.attack_cooldown > 0:
             self.attack_cooldown -= 1
 
-
-        #frissit a játékos pozicióját
+        # Játékos pozíciójának frissítése
         self.rect.x += dx
         self.rect.y += dy
-
     #animáció kezelése
     def update(self):
         # Ellenőrizd, hogy a játékos halott-e
@@ -184,21 +174,18 @@ class Fighter():
             print("Sprite index out of range.")
 
         # Árnyék
-        self.image_mask = pygame.mask.from_surface(self.image).outline() if self.flip == False else pygame.mask.from_surface(pygame.transform.flip(self.image, True, False)).outline()
-        self.image_mask = [(x + self.rect.x - self.rect.size[0], y + self.rect.y + 20) for x, y in self.image_mask]
+        self.image_mask = pygame.mask.from_surface(pygame.transform.flip(self.image, False, True) if self.flip == False else pygame.transform.flip(self.image, True, True)).outline() 
+        self.shadows = [(x + self.rect.x - (self.offset[0] * self.image_scale), y + self.rect.y - (self.offset[1] * self.image_scale)) for x, y in self.image_mask]  # Egyszerű eltolás, hogy látható legyen az árnyék
 
-        sun_pos = pygame.Vector2(SCREEN_WIDTH/8, 0)
-        target_pos = pygame.Vector2(0, SCREEN_HEIGHT)
-        sun_angle = math.atan2((sun_pos.x - target_pos.x), (sun_pos.y - target_pos.y))
 
-        self.shadows = []
+        # Az árnyék távolsága növekszik, ahogy a karakter emelkedik a földről
+        shadow_offset = max(0, ground_level_y - self.rect.bottom) + height_scale
 
-        for x, y in self.image_mask:
+        # Frissítsd az árnyék pozícióját, hogy az a karakter alatt, de a földhöz közel legyen
+        self.shadows = [(x + self.rect.x - (self.offset[0] * self.image_scale),
+                        y + ground_level_y + shadow_offset)
+                        for x, y in self.image_mask]
 
-            shadow_height = (500 - y) * 1.3
-            shadow_width = shadow_height * math.tan(sun_angle)
-            shadow_point = (x + shadow_width, y + shadow_height)
-            self.shadows.append(shadow_point)
         
         # Animációs időzítés
         if pygame.time.get_ticks() - self.update_time > ANIMATION_SPEED:
@@ -250,18 +237,20 @@ class Fighter():
        # pygame.draw.rect(surface, (0,255,0), attacking_rect)
 
     def regen(self):
+        # Stamina regenerálás a maximális stamina határáig
         if self.stamina < self.max_stamina and not self.attacking and not self.blocking:
             self.stamina += self.stamina_regen_rate
 
     def update_action(self, new_action):
-    #nézze meg hogy más e az action
         if new_action != self.action:
             self.action = new_action
             self.frame_index = 0
             self.update_time = pygame.time.get_ticks()
 
     def draw(self, surface):
+        pygame.draw.rect(surface, RED, self.rect)
         img = pygame.transform.flip(self.image, self.flip, False)
-        # pygame.draw.rect(surface, (250, 0, 0), self.rect)
-        surface.blit(img, (self.rect.x -  (self.offset[0]*self.image_scale), self.rect.y - (self.offset[1]*self.image_scale)))
-        pygame.draw.polygon(surface, (0, 0, 0), self.shadows)
+        surface.blit(img, (self.rect.x - (self.offset[0] * self.image_scale), self.rect.y - (self.offset[1] * self.image_scale)))
+        # Árnyék rajzolása
+        if self.shadows:  # Csak akkor rajzolj, ha van árnyék
+            pygame.draw.polygon(surface, (0, 0, 0), self.shadows)

@@ -9,6 +9,9 @@ pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Combocombat')
 
+# Skálázási tényezők kiszámítása
+width_scale, height_scale = calculate_scaling_factor()
+
 clock = pygame.time.Clock()
 
 fighters = import_characters()
@@ -197,8 +200,8 @@ def draw_health_and_stamina_bar(health_image, health, max_health, stamina_image,
 def set_fighters():
     global fighter_1 
     global fighter_2
-    fighter_1 = Fighter(1, 200, 310, False, fighters[selected_fighter_indices[0]].data, fighters[selected_fighter_indices[0]].sprite_sheet, fighters[selected_fighter_indices[0]].animation_steps)
-    fighter_2 = Fighter(2, 700, 310, True, fighters[selected_fighter_indices[1]].data, fighters[selected_fighter_indices[1]].sprite_sheet, fighters[selected_fighter_indices[1]].animation_steps)
+    fighter_1 = Fighter(1, SCREEN_WIDTH / 4, SCREEN_HEIGHT - 110 * height_scale - 180 * height_scale, False, fighters[selected_fighter_indices[0]].data, fighters[selected_fighter_indices[0]].sprite_sheet, fighters[selected_fighter_indices[0]].animation_steps)
+    fighter_2 = Fighter(2, SCREEN_WIDTH - SCREEN_WIDTH / 4 - 80 * width_scale, SCREEN_HEIGHT - 110 * height_scale - 180 * height_scale, True, fighters[selected_fighter_indices[1]].data, fighters[selected_fighter_indices[1]].sprite_sheet, fighters[selected_fighter_indices[1]].animation_steps)
 
 pygame.mixer.music.load("./Music/fight_music.wav")
 
