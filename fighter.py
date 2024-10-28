@@ -83,7 +83,7 @@ class Fighter():
                 if key[P1_JUMP] and not self.jump and not self.blocking:
                     self.vel_y = -30 * height_scale
                     self.jump = True
-                if key[P1_ATK1] or key[P1_ATK2]:
+                if key[P1_ATK1] or key[P1_ATK2] and not self.hit:
                     self.attack(target)
                     if key[P1_ATK1]:
                         self.attack_type = 1
