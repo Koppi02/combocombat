@@ -55,13 +55,9 @@ class CharacterSelection:
         self.screen = screen
         self.fighters = fighters
         self.selected_characters = [None, None]
-        self.current_player = 0
+        self.current_indices = [0, 0]  # Két játékos indexei
         self.font = font
-        self.done = False
-        self.current_index = 0
-        self.character_count = len(fighters)
-
-
+        self.screen_height = self.screen.get_height()  # Képernyő magasságának beállítása
 
     def run(self):
         selecting = True
@@ -73,52 +69,75 @@ class CharacterSelection:
                     return None
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP:
-                        self.current_index = (self.current_index - 1) % self.character_count
-                    elif event.key == pygame.K_DOWN:
-                        self.current_index = (self.current_index + 1) % self.character_count
-                    elif event.key == pygame.K_RETURN:
-                        if self.selected_characters[self.current_player] is None:
-                            # választás
-                            self.selected_characters[self.current_player] = self.current_index
-                            print(f"Player {self.current_player + 1} selected fighter {self.current_index}")
-                            if self.current_player == 0:
-                                self.current_player = 1  # Switch P2
-                            else:
-                                selecting = False  # mind a 2 választot
-                    elif event.key == pygame.K_ESCAPE:
-                        pygame.quit()
-                        return None
+                    # Player 1 controls (A, D, R)
+                    if event.key == P1_LEFT and self.selected_characters[0] is None:
+                        self.current_indices[0] = (self.current_indices[0] - 1) % len(self.fighters)
+                    elif event.key == P1_RIGHT and self.selected_characters[0] is None:
+                        self.current_indices[0] = (self.current_indices[0] + 1) % len(self.fighters)
+                    elif event.key == P1_ATK1 and self.selected_characters[0] is None:
+                        if self.selected_characters[0] is None:
+                            self.selected_characters[0] = self.current_indices[0]
+                            print(f"Player 1 selected fighter {self.current_indices[0]}")
+
+                    # Player 2 controls (Arrow keys, Comma)
+                    if event.key == P2_LEFT and self.selected_characters[1] is None:
+                        self.current_indices[1] = (self.current_indices[1] - 1) % len(self.fighters)
+                    elif event.key == P2_RIGHT and self.selected_characters[1] is None:
+                        self.current_indices[1] = (self.current_indices[1] + 1) % len(self.fighters)
+                    elif event.key == P2_ATK1 and self.selected_characters[1] is None:
+                        if self.selected_characters[1] is None:
+                            self.selected_characters[1] = self.current_indices[1]
+                            print(f"Player 2 selected fighter {self.current_indices[1]}")
+
+                    # Check if both players have selected their fighters
+                    if all(character is not None for character in self.selected_characters):
+                        self.draw() # Egy utolsó képfrissítés
+                        # Wait for a moment before proceeding
+                        pygame.time.delay(1000)  # Várakozás 1000 ms (1 másodperc)
+                        selecting = False
 
             pygame.display.update()
 
         return self.selected_characters
 
+
     def draw(self):
         self.screen.fill((0, 0, 0))  # tiszta háttér
 
-        # kiírja a karaktereket és, hogy állnak
-        for idx, fighter in enumerate(self.fighters):
-            # milyen színe legyen a választotnak
-            if idx == self.current_index:
-                color = (255, 255, 0)  # citrom
-                # egy négyzetet rajzol a választot mögé
-                pygame.draw.rect(self.screen, (50, 50, 50), (80, 95 + idx * 40, 320, 50))  # szürke háttér
-                # a választottat felnagyítja
-                text_surface = self.font.render(f"{fighter.name}", True, color)
-                text_surface = pygame.transform.scale(text_surface, (
-                    int(text_surface.get_width() * 1.2), int(text_surface.get_height() * 1.2)))  # felnagyítás
-            else:
-                color = (255, 255, 255)  # fehér háttér
-                text_surface = self.font.render(f"{fighter.name}", True, color)
+        # Player 1 képének megjelenítése
+        fighter_1 = self.fighters[self.current_indices[0]]
+        image_surface_1 = fighter_1.thumbnail  # Kép betöltése
+        # Kép átméretezése, hogy a magassága megegyezzen a képernyő magasságával
+        image_surface_1 = pygame.transform.scale(image_surface_1, (int(image_surface_1.get_width() * (self.screen_height / image_surface_1.get_height())), self.screen_height))
+        self.screen.blit(image_surface_1, (0, 0))  # Kép elhelyezése a bal oldalon
 
-            # nevek elhelyezése
-            self.screen.blit(text_surface,(100, 90 + idx * 40))
+        # Player 2 képének megjelenítése
+        fighter_2 = self.fighters[self.current_indices[1]]
+        image_surface_2 = pygame.transform.flip(fighter_2.thumbnail, True, False)  # Kép betöltése
+        # Kép átméretezése, hogy a magassága megegyezzen a képernyő magasságával
+        image_surface_2 = pygame.transform.scale(image_surface_2, (int(image_surface_2.get_width() * (self.screen_height / image_surface_2.get_height())), self.screen_height))
+        self.screen.blit(image_surface_2, (self.screen.get_width() - image_surface_2.get_width(), 0))  # Kép elhelyezése a jobb oldalon
 
-        indicator_surface = self.font.render("Current Selection:", True, (255, 255, 0))
-        self.screen.blit(indicator_surface, (100, 50))
+        # Keretek rajzolása, ha a karaktert kiválasztották
+        if self.selected_characters[0] is not None:  # Ha az 1. játékos választott
+            pygame.draw.rect(self.screen, (255, 255, 0), (0, 0, image_surface_1.get_width(), self.screen_height), 3)  # Sárga keret
+        if self.selected_characters[1] is not None:  # Ha a 2. játékos választott
+            pygame.draw.rect(self.screen, (0, 255, 0), (self.screen.get_width() - image_surface_2.get_width(), 0, image_surface_2.get_width(), self.screen_height), 3)  # Zöld keret
+
+        # Indikátorok megjelenítése
+        indicator_surface = self.font.render(fighter_1.name, True, (255, 255, 0))
+        self.screen.blit(indicator_surface, (0, 0))
+        
+        indicator_surface = self.font.render(fighter_2.name, True, (0, 255, 0))
+        self.screen.blit(indicator_surface, (self.screen.get_width() - self.font.size(fighter_2.name)[0], 0))
 
         pygame.display.flip()
+
+
+
+
+
+
 
 
 def winner_screen(winner):
@@ -200,8 +219,8 @@ def draw_health_and_stamina_bar(health_image, health, max_health, stamina_image,
 def set_fighters():
     global fighter_1 
     global fighter_2
-    fighter_1 = Fighter(1, SCREEN_WIDTH / 4, SCREEN_HEIGHT - 110 * height_scale - 180 * height_scale, False, fighters[selected_fighter_indices[0]].data, fighters[selected_fighter_indices[0]].sprite_sheet, fighters[selected_fighter_indices[0]].animation_steps)
-    fighter_2 = Fighter(2, SCREEN_WIDTH - SCREEN_WIDTH / 4 - 80 * width_scale, SCREEN_HEIGHT - 110 * height_scale - 180 * height_scale, True, fighters[selected_fighter_indices[1]].data, fighters[selected_fighter_indices[1]].sprite_sheet, fighters[selected_fighter_indices[1]].animation_steps)
+    fighter_1 = Fighter(1, SCREEN_WIDTH / 4, SCREEN_HEIGHT - 110 * height_scale - 180 * height_scale, False, fighters[selected_fighter_indices[0]].data, fighters[selected_fighter_indices[0]].sprite_sheet, fighters[selected_fighter_indices[0]].animation_steps, fighters[selected_fighter_indices[0]].thumbnail)
+    fighter_2 = Fighter(2, SCREEN_WIDTH - SCREEN_WIDTH / 4 - 80 * width_scale, SCREEN_HEIGHT - 110 * height_scale - 180 * height_scale, True, fighters[selected_fighter_indices[1]].data, fighters[selected_fighter_indices[1]].sprite_sheet, fighters[selected_fighter_indices[1]].animation_steps, fighters[selected_fighter_indices[1]].thumbnail)
 
 pygame.mixer.music.load("./Music/fight_music.wav")
 

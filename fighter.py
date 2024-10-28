@@ -8,10 +8,11 @@ class Fighter():
     width_scale, height_scale = calculate_scaling_factor()
     global ground_level_y
     ground_level_y = SCREEN_HEIGHT - 110 * height_scale  # A karakter „föld” szintjének magassága
-    def __init__(self, player, x, y, flip, data, sprite_sheet, animation_steps):
+    def __init__(self, player, x, y, flip, data, sprite_sheet, animation_steps, thumbnail):
         self.player = player
         self.data = data
         self.name = data[0]
+        self.thumbnail = thumbnail
         self.size = SPRITE_SIZE
         self.image_scale = SPRITE_SCALE
         self.offset = SPRITE_OFFSET
@@ -248,9 +249,9 @@ class Fighter():
             self.update_time = pygame.time.get_ticks()
 
     def draw(self, surface):
-        pygame.draw.rect(surface, RED, self.rect)
-        img = pygame.transform.flip(self.image, self.flip, False)
-        surface.blit(img, (self.rect.x - (self.offset[0] * self.image_scale), self.rect.y - (self.offset[1] * self.image_scale)))
+        # pygame.draw.rect(surface, RED, self.rect)
         # Árnyék rajzolása
         if self.shadows:  # Csak akkor rajzolj, ha van árnyék
             pygame.draw.polygon(surface, (0, 0, 0), self.shadows)
+        img = pygame.transform.flip(self.image, self.flip, False)
+        surface.blit(img, (self.rect.x - (self.offset[0] * self.image_scale), self.rect.y - (self.offset[1] * self.image_scale)))

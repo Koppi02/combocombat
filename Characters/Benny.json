@@ -5,5 +5,6 @@
     "dmg1": 10,
     "dmg2": 20,
     "sprite_sheet": "BennySpriteSheet.png",
+    "thumbnail": "BennyThumbnail.png",
     "animation_steps": [7, 1, 1, 1, 1, 1, 1, 1]
 }
