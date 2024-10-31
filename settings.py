@@ -7,13 +7,15 @@ BASE_SCREEN_WIDTH = 1024
 BASE_SCREEN_HEIGHT = 576
 
 # Aktuális felbontás
-SCREEN_WIDTH = 1920
-SCREEN_HEIGHT = 1080
+SCREEN_WIDTH = 1024
+SCREEN_HEIGHT = 576
 
 def calculate_scaling_factor():
     width_scale = SCREEN_WIDTH / BASE_SCREEN_WIDTH
     height_scale = SCREEN_HEIGHT / BASE_SCREEN_HEIGHT
     return width_scale, height_scale
+
+width_scale, height_scale = calculate_scaling_factor()
 
     # FPS
 FPS = 60
@@ -30,11 +32,20 @@ SCORE_FONT = pygame.font.Font('./DoubleHomicide.ttf', 30)
 intro_count = 3
 ROUND_OVER_COOLDOWN = 5000
 WINNING_SCORE = 3
+GROUND_LEVEL = SCREEN_HEIGHT - 55 * height_scale  # A karakter „föld” szintjének magassága
+
+
+SPEED = 10 * width_scale
+GRAVITY = 2 * height_scale
+
     # Sprite Beállítások - Mostmár egységesnek kell lennie mindegyik karakternek (Mert miért lenne nem egységes?)
 SPRITE_SIZE = 128
-SPRITE_SCALE = 1.7
-SPRITE_OFFSET = [40 * calculate_scaling_factor()[0], 20 * calculate_scaling_factor()[1]]
+SPRITE_SCALE = 3
+COL_RECT_WIDTH = 40 * SPRITE_SCALE
+COL_RECT_HEIGHT = SPRITE_SIZE / 5 * 4 * SPRITE_SCALE
+SPRITE_OFFSET = [(SPRITE_SIZE/2 - COL_RECT_WIDTH/SPRITE_SCALE/2) * width_scale, (SPRITE_SIZE - COL_RECT_HEIGHT/SPRITE_SCALE)* height_scale]
 ANIMATION_SPEED = 75
+
     # Irányítás
 P1_LEFT = pygame.K_a
 P1_RIGHT = pygame.K_d

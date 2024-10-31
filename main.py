@@ -9,9 +9,6 @@ pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Combocombat')
 
-# Skálázási tényezők kiszámítása
-width_scale, height_scale = calculate_scaling_factor()
-
 clock = pygame.time.Clock()
 
 fighters = import_characters()
@@ -165,7 +162,7 @@ score = [0, 0]#score [P1,P2]
 round_over = False
 
 #háttér beállítás
-bg_image = pygame.image.load('./Maps/testMap.png').convert_alpha()
+bg_image = pygame.image.load('./Maps/japan.png').convert_alpha()
 menu_image = pygame.image.load('./MenuArt.png').convert_alpha()
 
 #kiírja amit kell
@@ -219,8 +216,8 @@ def draw_health_and_stamina_bar(health_image, health, max_health, stamina_image,
 def set_fighters():
     global fighter_1 
     global fighter_2
-    fighter_1 = Fighter(1, SCREEN_WIDTH / 4, SCREEN_HEIGHT - 110 * height_scale - 180 * height_scale, False, fighters[selected_fighter_indices[0]].data, fighters[selected_fighter_indices[0]].sprite_sheet, fighters[selected_fighter_indices[0]].animation_steps, fighters[selected_fighter_indices[0]].thumbnail)
-    fighter_2 = Fighter(2, SCREEN_WIDTH - SCREEN_WIDTH / 4 - 80 * width_scale, SCREEN_HEIGHT - 110 * height_scale - 180 * height_scale, True, fighters[selected_fighter_indices[1]].data, fighters[selected_fighter_indices[1]].sprite_sheet, fighters[selected_fighter_indices[1]].animation_steps, fighters[selected_fighter_indices[1]].thumbnail)
+    fighter_1 = Fighter(1, SCREEN_WIDTH / 4, GROUND_LEVEL, False, fighters[selected_fighter_indices[0]].data, fighters[selected_fighter_indices[0]].sprite_sheet, fighters[selected_fighter_indices[0]].animation_steps, fighters[selected_fighter_indices[0]].thumbnail)
+    fighter_2 = Fighter(2, SCREEN_WIDTH - SCREEN_WIDTH / 4 - 80 * width_scale, GROUND_LEVEL, True, fighters[selected_fighter_indices[1]].data, fighters[selected_fighter_indices[1]].sprite_sheet, fighters[selected_fighter_indices[1]].animation_steps, fighters[selected_fighter_indices[1]].thumbnail)
 
 pygame.mixer.music.load("./Music/fight_music.wav")
 
@@ -246,6 +243,14 @@ while True:
         while run:
             clock.tick(FPS)
             draw_bg(bg_image)  # Háttér kirajzolása
+
+            # Fighter frissítés és kirajzolás
+            fighter_1.update()
+            fighter_2.update()
+            fighter_1.draw(screen)
+            fighter_2.draw(screen)
+            fighter_1.regen()
+            fighter_2.regen()
 
             # HP bar, játékosok, stb. kirajzolása
             draw_health_and_stamina_bar(health_image, fighter_1.health, fighter_1.max_health, stamina_image, fighter_1.stamina, fighter_1.max_stamina, SCREEN_WIDTH / 50, SCREEN_HEIGHT / 30, False)
@@ -276,13 +281,6 @@ while True:
                     pygame.mixer.music.play(-1)
                 
 
-            # Fighter frissítés és kirajzolás
-            fighter_1.update()
-            fighter_2.update()
-            fighter_1.draw(screen)
-            fighter_2.draw(screen)
-            fighter_1.regen()
-            fighter_2.regen()
 
             # Eseménykezelés
             for event in pygame.event.get():

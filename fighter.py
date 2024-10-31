@@ -4,10 +4,6 @@ import math
 
 class Fighter():
     # Dinamikus skálázási tényezők
-    global width_scale, height_scale
-    width_scale, height_scale = calculate_scaling_factor()
-    global ground_level_y
-    ground_level_y = SCREEN_HEIGHT - 110 * height_scale  # A karakter „föld” szintjének magassága
     def __init__(self, player, x, y, flip, data, sprite_sheet, animation_steps, thumbnail):
         self.player = player
         self.data = data
@@ -22,11 +18,8 @@ class Fighter():
         self.frame_index = 0
         self.image = self.animation_list[self.action][self.frame_index]
         self.update_time = pygame.time.get_ticks()
-        
-        
-        
         # Karakter téglalapja
-        self.rect = pygame.Rect((x, y, 80 * width_scale, 180 * height_scale))
+        self.rect = pygame.Rect((x, y - COL_RECT_HEIGHT * height_scale, COL_RECT_WIDTH * width_scale, COL_RECT_HEIGHT * height_scale))
         self.vel_y = 0
         self.running = False
         self.jump = False
@@ -61,9 +54,6 @@ class Fighter():
         return animation_list
 
     def move(self, screen_width, screen_height, surface, target, round_over):
-        width_scale, height_scale = calculate_scaling_factor()
-        SPEED = 10 * width_scale
-        GRAVITY = 2 * height_scale
         dx, dy = 0, 0
         self.running = False
         self.attack_type = 0
@@ -81,7 +71,7 @@ class Fighter():
                     dx = SPEED
                     self.running = True
                 if key[P1_JUMP] and not self.jump and not self.blocking:
-                    self.vel_y = -30 * height_scale
+                    self.vel_y = -40 * height_scale
                     self.jump = True
                 if key[P1_ATK1] or key[P1_ATK2] and not self.hit:
                     self.attack(target)
@@ -103,7 +93,7 @@ class Fighter():
                     dx = SPEED
                     self.running = True
                 if key[P2_JUMP] and not self.jump and not self.blocking:
-                    self.vel_y = -30 * height_scale
+                    self.vel_y = -40 * height_scale
                     self.jump = True
                 if (key[P2_ATK1] or key[P2_ATK2]) and not self.hit:
                     self.attack(target)
@@ -125,10 +115,10 @@ class Fighter():
             dx = -self.rect.left
         if self.rect.right + dx > SCREEN_WIDTH:
             dx = SCREEN_WIDTH - self.rect.right
-        if self.rect.bottom + dy > ground_level_y:
+        if self.rect.bottom + dy > GROUND_LEVEL:
             self.vel_y = 0
             self.jump = False
-            dy = SCREEN_HEIGHT - 110 * height_scale - self.rect.bottom
+            dy = GROUND_LEVEL - self.rect.bottom
 
 
         # Egymás felé néznek
@@ -185,11 +175,11 @@ class Fighter():
 
 
         # Az árnyék távolsága növekszik, ahogy a karakter emelkedik a földről
-        shadow_offset = max(0, ground_level_y - self.rect.bottom) + height_scale
+        shadow_offset = max(0, GROUND_LEVEL - self.rect.bottom) + height_scale
 
         # Frissítsd az árnyék pozícióját, hogy az a karakter alatt, de a földhöz közel legyen
         self.shadows = [(x + self.rect.x - (self.offset[0] * self.image_scale),
-                        y + ground_level_y + shadow_offset)
+                        y + GROUND_LEVEL + shadow_offset)
                         for x, y in self.image_mask]
 
         
@@ -225,19 +215,6 @@ class Fighter():
                     if not target.hit:  # Csak akkor sebez, ha a target még nem kapott sebzést
                         target.health -= self.dmg1 if self.attack_type == 1 else self.dmg2
                         target.hit = True  # Beállítjuk a hit flaget a célnak
-                    # if target.attacking:
-                    #     self.health -= target.dmg1 if target.attack_type == 1 else target.dmg2
-                    #     self.hit = True
-                
-                # Támadó játékos sebzése (ha a target is támad)
-                # if target.attacking and not self.hit:
-                #     self.health -= target.dmg1 if target.attack_type == 1 else target.dmg2  # Támadó játékos sebzése
-                #     self.hit = True  # Beállítjuk a hit flaget a támadónak
-                #     # Összeütés bünti
-                #     self.attack_cooldown = 5
-                #     target.attack_cooldown = 5
-            
-             # self.attack_cooldown = 0  # Beállítjuk a támadási időzítőt
 
 
        # pygame.draw.rect(surface, (0,255,0), attacking_rect)
