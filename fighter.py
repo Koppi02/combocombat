@@ -130,11 +130,24 @@ class Fighter():
             self.jump = False
             dy = SCREEN_HEIGHT - 110 * height_scale - self.rect.bottom
 
+
         # Egymás felé néznek
         if target.rect.centerx > self.rect.centerx:
             self.flip = False
         else:
             self.flip = True
+
+        # Collision másik játékossal
+        if self.rect.right + dx > target.rect.left and self.flip == False:
+            if self.jump == False:
+                dx = 0
+            elif dy > target.rect.height:
+                dx = dx + target.rect.width
+        elif self.rect.left + dx < target.rect.right and self.flip == True:
+            if self.jump == False:
+                dx = 0
+            elif dy > target.rect.height:
+                dx = dx + target.rect.width
 
         # Támadás visszaszámláló
         if self.attack_cooldown > 0:
