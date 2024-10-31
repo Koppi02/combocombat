@@ -138,16 +138,8 @@ class Fighter():
             self.flip = True
 
         # Collision másik játékossal
-        if self.rect.right + dx > target.rect.left and self.flip == False:
-            if self.jump == False:
-                dx = 0
-            elif dy > target.rect.height:
-                dx = dx + target.rect.width
-        elif self.rect.left + dx < target.rect.right and self.flip == True:
-            if self.jump == False:
-                dx = 0
-            elif dy > target.rect.height:
-                dx = dx + target.rect.width
+        if self.rect.colliderect(target.rect):
+            dx = (-10*width_scale if self.flip == False else 10*width_scale) if self.jump else (-1*width_scale if self.flip == False else 1*width_scale)
 
         # Támadás visszaszámláló
         if self.attack_cooldown > 0:

@@ -7,8 +7,8 @@ BASE_SCREEN_WIDTH = 1024
 BASE_SCREEN_HEIGHT = 576
 
 # Aktuális felbontás
-SCREEN_WIDTH = 1024
-SCREEN_HEIGHT = 576
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
 
 def calculate_scaling_factor():
     width_scale = SCREEN_WIDTH / BASE_SCREEN_WIDTH
