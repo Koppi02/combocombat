@@ -168,20 +168,6 @@ class Fighter():
             self.image = self.animation_list[self.action][self.frame_index]
         except:
             print("Sprite index out of range.")
-
-        # Árnyék
-        self.image_mask = pygame.mask.from_surface(pygame.transform.flip(self.image, False, True) if self.flip == False else pygame.transform.flip(self.image, True, True)).outline() 
-        self.shadows = [(x + self.rect.x - (self.offset[0] * self.image_scale), y + self.rect.y - (self.offset[1] * self.image_scale)) for x, y in self.image_mask]  # Egyszerű eltolás, hogy látható legyen az árnyék
-
-
-        # Az árnyék távolsága növekszik, ahogy a karakter emelkedik a földről
-        shadow_offset = max(0, GROUND_LEVEL - self.rect.bottom) + height_scale
-
-        # Frissítsd az árnyék pozícióját, hogy az a karakter alatt, de a földhöz közel legyen
-        self.shadows = [(x + self.rect.x - (self.offset[0] * self.image_scale),
-                        y + GROUND_LEVEL + shadow_offset)
-                        for x, y in self.image_mask]
-
         
         # Animációs időzítés
         if pygame.time.get_ticks() - self.update_time > ANIMATION_SPEED:
@@ -232,8 +218,5 @@ class Fighter():
 
     def draw(self, surface):
         # pygame.draw.rect(surface, RED, self.rect)
-        # Árnyék rajzolása
-        if self.shadows:  # Csak akkor rajzolj, ha van árnyék
-            pygame.draw.polygon(surface, (0, 0, 0), self.shadows)
         img = pygame.transform.flip(self.image, self.flip, False)
         surface.blit(img, (self.rect.x - (self.offset[0] * self.image_scale), self.rect.y - (self.offset[1] * self.image_scale)))
