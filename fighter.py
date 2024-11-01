@@ -21,6 +21,7 @@ class Fighter():
         # Karakter téglalapja
         self.rect = pygame.Rect((x, y - COL_RECT_HEIGHT * height_scale, COL_RECT_WIDTH * width_scale, COL_RECT_HEIGHT * height_scale))
         self.vel_y = 0
+        self.vel_x = 0
         self.running = False
         self.jump = False
         self.attacking = False
@@ -110,6 +111,10 @@ class Fighter():
         self.vel_y += GRAVITY
         dy += self.vel_y
 
+        if self.vel_x != 0:
+            self.vel_x = (self.vel_x + GRAVITY) if self.flip == False else (self.vel_x - GRAVITY)
+        dx += self.vel_x
+
         # Játékos a pályán belül marad
         if self.rect.left + dx < 0:
             dx = -self.rect.left
@@ -149,6 +154,7 @@ class Fighter():
         elif self.hit and self.alive:  # Csak ha él, és eltalálták
             self.update_action(5)  # Találat animáció
             self.attacking = False  # Ha eltalálták, állítsd le a támadást
+            self.vel_x = (-10 * width_scale) if self.flip == False else (10 * width_scale) # Hátralökés bünti
         elif self.attacking:
             if self.attack_type == 1:
                 self.update_action(3)  # Támadás 1
