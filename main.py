@@ -19,32 +19,31 @@ fight_sound = pygame.mixer.Sound('./Sounds/fight.wav')
 # Főmenü
 def start_menu():
     pygame.mixer.Sound.play(title_sound)
-    menu_running = True
-    while menu_running:
 
-        draw_bg(menu_image)
+    draw_bg(menu_image)
 
+    draw_centered_text('Combocombat', COUNT_FONT, BLACK, SCREEN_WIDTH / 2 + 5, SCREEN_HEIGHT / 3 + 5)
+    draw_centered_text('Combocombat', COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
+    draw_centered_text('Press ENTER to Start', SCORE_FONT, BLACK, SCREEN_WIDTH / 2 + 2, SCREEN_HEIGHT / 2 + 2)
+    draw_centered_text('Press ENTER to Start', SCORE_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    draw_centered_text('Press ESC to Quit', SCORE_FONT, BLACK, SCREEN_WIDTH / 2 + 2, SCREEN_HEIGHT / 1.5 + 2)
+    draw_centered_text('Press ESC to Quit', SCORE_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.5)
 
-        draw_centered_text('Combocombat', COUNT_FONT, BLACK, SCREEN_WIDTH / 2 + 5, SCREEN_HEIGHT / 3 + 5)
-        draw_centered_text('Combocombat', COUNT_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)
-        draw_centered_text('Press ENTER to Start', SCORE_FONT, BLACK, SCREEN_WIDTH / 2 + 2, SCREEN_HEIGHT / 2 + 2)
-        draw_centered_text('Press ENTER to Start', SCORE_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-        draw_centered_text('Press ESC to Quit', SCORE_FONT, BLACK, SCREEN_WIDTH / 2 + 2, SCREEN_HEIGHT / 1.5 + 2)
-        draw_centered_text('Press ESC to Quit', SCORE_FONT, RED, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.5)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            return False
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                return True
+            elif event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 return False
+    pygame.display.update()
+    return False
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    menu_running = False
-                elif event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    return False
-        pygame.display.update()
-    return True
+
 
 class CharacterSelection:
     def __init__(self, screen, fighters, font):
@@ -325,4 +324,4 @@ while True:
 
             # Frissíti a képet
             pygame.display.update()
-    pygame.quit()
+
