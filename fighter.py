@@ -112,7 +112,7 @@ class Fighter():
         dy += self.vel_y
 
         if self.vel_x != 0:
-            self.vel_x = (self.vel_x + GRAVITY) if self.flip == False else (self.vel_x - GRAVITY)
+            self.vel_x = int(self.vel_x + GRAVITY) if self.flip == False else int(self.vel_x - GRAVITY)
         dx += self.vel_x
 
         # Játékos a pályán belül marad
@@ -154,7 +154,7 @@ class Fighter():
         elif self.hit and self.alive:  # Csak ha él, és eltalálták
             self.update_action(5)  # Találat animáció
             self.attacking = False  # Ha eltalálták, állítsd le a támadást
-            self.vel_x = (-10 * width_scale) if self.flip == False else (10 * width_scale) # Hátralökés bünti
+            self.vel_x = (-5 * width_scale) if self.flip == False else (5 * width_scale) # Hátralökés bünti
         elif self.attacking:
             if self.attack_type == 1:
                 self.update_action(3)  # Támadás 1

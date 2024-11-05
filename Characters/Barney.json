@@ -1,0 +1,10 @@
+{
+    "name": "Barney",
+    "health": 200,
+    "stamina": 100,
+    "dmg1": 10,
+    "dmg2": 20,
+    "sprite_sheet": "BarneySpriteSheet.png",
+    "thumbnail": "BarneyThumbnail.png",
+    "animation_steps": [8, 8, 1, 3, 3, 3, 6, 1]
+}

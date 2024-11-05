@@ -2,7 +2,6 @@ import pygame
 from fighter import Fighter
 from import_characters import *
 from settings import *
-from settings import intro_count
 
 pygame.init()
 
@@ -117,15 +116,15 @@ class CharacterSelection:
 
         # Keretek rajzolása, ha a karaktert kiválasztották
         if self.selected_characters[0] is not None:  # Ha az 1. játékos választott
-            pygame.draw.rect(self.screen, (255, 255, 0), (0, 0, image_surface_1.get_width(), self.screen_height), 3)  # Sárga keret
+            pygame.draw.rect(self.screen, RED, (0, 0, image_surface_1.get_width(), self.screen_height), 3)  # Sárga keret
         if self.selected_characters[1] is not None:  # Ha a 2. játékos választott
-            pygame.draw.rect(self.screen, (0, 255, 0), (self.screen.get_width() - image_surface_2.get_width(), 0, image_surface_2.get_width(), self.screen_height), 3)  # Zöld keret
+            pygame.draw.rect(self.screen, BLUE, (self.screen.get_width() - image_surface_2.get_width(), 0, image_surface_2.get_width(), self.screen_height), 3)  # Zöld keret
 
         # Indikátorok megjelenítése
-        indicator_surface = self.font.render(fighter_1.name, True, (255, 255, 0))
+        indicator_surface = self.font.render(fighter_1.name, True, RED)
         self.screen.blit(indicator_surface, (0, 0))
         
-        indicator_surface = self.font.render(fighter_2.name, True, (0, 255, 0))
+        indicator_surface = self.font.render(fighter_2.name, True, BLUE)
         self.screen.blit(indicator_surface, (self.screen.get_width() - self.font.size(fighter_2.name)[0], 0))
 
         pygame.display.flip()
@@ -251,6 +250,10 @@ while True:
             fighter_2.draw(screen)
             fighter_1.regen()
             fighter_2.regen()
+
+            # Kamera pivot teszt
+            # camera_pivot = ((fighter_1.rect.center[0] + fighter_2.rect.center[0])/2, (fighter_1.rect.center[1] + fighter_2.rect.center[1])/2)
+            # pygame.draw.circle(screen, RED, camera_pivot, 30, 10)
 
             # HP bar, játékosok, stb. kirajzolása
             draw_health_and_stamina_bar(health_image, fighter_1.health, fighter_1.max_health, stamina_image, fighter_1.stamina, fighter_1.max_stamina, SCREEN_WIDTH / 50, SCREEN_HEIGHT / 30, False)
